@@ -743,10 +743,29 @@ async function api(path, method='GET', body=null) {
   const opts = { method, headers: {'Content-Type':'application/json'} };
   if(token) opts.headers['Authorization'] = 'Bearer ' + token;
   if(body) opts.body = JSON.stringify(body);
-  const r = await fetch(API + path, opts);
-  const data = await r.json();
-  if(!r.ok) throw new Error(data.detail || 'Error');
-  return data;
+  try {
+    try {
+      console.log('API REQUEST:', method, API + path, body ? JSON.parse(opts.body) : null);
+    } catch (e) {
+      console.log('API REQUEST:', method, API + path, opts.body);
+    }
+    const r = await fetch(API + path, opts);
+    let data = null;
+    try {
+      data = await r.clone().json();
+    } catch (e) {
+      try { data = await r.clone().text(); } catch (e2) { data = null; }
+    }
+    console.log('API RESPONSE:', { url: API + path, status: r.status, ok: r.ok, data });
+    if(!r.ok) {
+      const msg = data && data.detail ? data.detail : (typeof data === 'string' ? data : 'Error');
+      throw new Error(msg);
+    }
+    return data;
+  } catch (err) {
+    console.log('API ERROR:', err && err.message ? err.message : err);
+    throw err;
+  }
 }
 
 // ── Toast ───────────────────────────────────────────────────────────────
