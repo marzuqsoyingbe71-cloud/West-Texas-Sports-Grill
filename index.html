@@ -708,7 +708,7 @@ document.addEventListener('DOMContentLoaded', () => {
   applyBackendImages();
 });
 
-const API = window.location.protocol === 'file:' ? 'https://west-texas-sports-grill-backend.onrender.comapi' : '/api';
+const API = window.location.protocol === 'file:' ? 'https://west-texas-sports-grill-backend.onrender.com/api' : '/api';
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
 let selectedRating = 0;
