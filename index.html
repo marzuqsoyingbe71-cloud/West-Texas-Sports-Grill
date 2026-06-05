@@ -1161,10 +1161,17 @@ async function submitReview() {
 }
 
 // ── ADMIN ──────────────────────────────────────────────────────────────────
-function adminTab(tab,el) {
+async function adminTab(tab,el) {
   document.querySelectorAll('.anav').forEach(i=>i.classList.remove('active'));
   el.classList.add('active');
-  ({dashboard:loadAdminDashboard,orders:loadAdminOrders,reservations:loadAdminReservations,menu:loadAdminMenu,categories:loadAdminCategories,reviews:loadAdminReviews,settings:loadSiteSettings})[tab]?.();
+  try {
+    await api('/settings');
+  } catch (e) {
+    document.getElementById('admin-content').innerHTML = '<p class="no-data">Backend unavailable. Admin features require a reachable backend API.</p>';
+    return;
+  }
+  const map = {dashboard:loadAdminDashboard,orders:loadAdminOrders,reservations:loadAdminReservations,menu:loadAdminMenu,categories:loadAdminCategories,reviews:loadAdminReviews,settings:loadSiteSettings};
+  map[tab]?.();
 }
 
 async function loadAdminDashboard() {
