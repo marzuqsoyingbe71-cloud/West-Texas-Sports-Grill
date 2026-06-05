@@ -1186,7 +1186,7 @@ async function loadAdminDashboard() {
       ${d.popular_items.length?`<h3 style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:1rem">🏆 Top Selling Items</h3>
       <table class="atable"><thead><tr><th>#</th><th>Item</th><th>Qty Sold</th></tr></thead>
       <tbody>${d.popular_items.map((i,idx)=>`<tr><td>${idx+1}</td><td>${i.name}</td><td>${i.quantity}</td></tr>`).join('')}</tbody></table>`:''}`;
-  } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Backend not connected. Start it with: uvicorn main:app --reload</p>'; }
+  } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Backend unavailable. Admin features require a reachable backend API.</p>'; }
 }
 
 async function loadAdminOrders() {
