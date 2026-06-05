@@ -152,7 +152,7 @@ h1.hero-title span{color:var(--rust)}
 .ci-price{font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--gold);min-width:55px;text-align:right}
 .cart-empty{text-align:center;padding:3rem 1rem;color:rgba(245,236,215,.3);font-size:2rem}
 .ot-select{padding:1rem 1.5rem;border-top:1px solid rgba(255,255,255,.08)}
-.ot-select label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:.6rem}
+.ot-select label,.ot-select .ot-label{font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);display:block;margin-bottom:.6rem}
 .type-btns{display:flex;gap:.5rem}
 .type-btn{flex:1;padding:.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:rgba(245,236,215,.7);border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1px;text-transform:uppercase;cursor:pointer;transition:all .2s}
 .type-btn.active{background:var(--rust);border-color:var(--rust);color:#fff}
@@ -515,14 +515,14 @@ h1.hero-title span{color:var(--rust)}
       <div class="order-sum" id="checkout-summary"></div>
       <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:1rem">Your Details</h3>
       <div class="form-row">
-        <div class="form-group"><label>Name *</label><input type="text" id="co-name" placeholder="Your name"></div>
-        <div class="form-group"><label>Phone *</label><input type="tel" id="co-phone" placeholder="806-000-0000"></div>
+        <div class="form-group"><label for="co-name">Name *</label><input type="text" id="co-name" placeholder="Your name"></div>
+        <div class="form-group"><label for="co-phone">Phone *</label><input type="tel" id="co-phone" placeholder="806-000-0000"></div>
       </div>
-      <div class="form-group"><label>Email</label><input type="email" id="co-email" placeholder="email@example.com"></div>
+      <div class="form-group"><label for="co-email">Email</label><input type="email" id="co-email" placeholder="email@example.com"></div>
       <div id="co-addr-wrap" style="display:none">
-        <div class="form-group"><label>Delivery Address *</label><input type="text" id="co-address" placeholder="Street address, Canyon TX"></div>
+        <div class="form-group"><label for="co-address">Delivery Address *</label><input type="text" id="co-address" placeholder="Street address, Canyon TX"></div>
       </div>
-      <div class="form-group"><label>Special Instructions</label><textarea id="co-notes" placeholder="Allergies, cooking preferences, extra sauce…"></textarea></div>
+      <div class="form-group"><label for="co-notes">Special Instructions</label><textarea id="co-notes" placeholder="Allergies, cooking preferences, extra sauce…"></textarea></div>
       <button class="btn-primary" style="width:100%" onclick="submitOrder()">Place Order 🤠</button>
     </div>
   </section>
@@ -556,21 +556,21 @@ h1.hero-title span{color:var(--rust)}
     </div>
     <div class="res-form" id="res-form-wrap">
       <div class="form-row">
-        <div class="form-group"><label>Name *</label><input type="text" id="res-name" placeholder="Full name"></div>
-        <div class="form-group"><label>Party Size *</label><input type="number" id="res-party" min="1" max="20" placeholder="2"></div>
+        <div class="form-group"><label for="res-name">Name *</label><input type="text" id="res-name" placeholder="Full name"></div>
+        <div class="form-group"><label for="res-party">Party Size *</label><input type="number" id="res-party" min="1" max="20" placeholder="2"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Email *</label><input type="email" id="res-email" placeholder="email@example.com"></div>
-        <div class="form-group"><label>Phone *</label><input type="tel" id="res-phone" placeholder="806-000-0000"></div>
+        <div class="form-group"><label for="res-email">Email *</label><input type="email" id="res-email" placeholder="email@example.com"></div>
+        <div class="form-group"><label for="res-phone">Phone *</label><input type="tel" id="res-phone" placeholder="806-000-0000"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label>Date *</label><input type="date" id="res-date" onchange="loadTimeSlots()"></div>
+        <div class="form-group"><label for="res-date">Date *</label><input type="date" id="res-date" onchange="loadTimeSlots()"></div>
         <div class="form-group">
-          <label>Time *</label>
+          <div class="form-label">Time *</div>
           <div class="time-grid" id="time-slots"><p style="color:rgba(245,236,215,.3);font-size:.85rem;grid-column:1/-1">Select a date first</p></div>
         </div>
       </div>
-      <div class="form-group"><label>Special Requests</label><textarea id="res-special" placeholder="Dietary needs, occasion, seating preferences…"></textarea></div>
+      <div class="form-group"><label for="res-special">Special Requests</label><textarea id="res-special" placeholder="Dietary needs, occasion, seating preferences…"></textarea></div>
       <button class="btn-primary" style="width:100%" onclick="submitReservation()">Request Reservation</button>
       <p style="text-align:center;margin-top:.8rem;font-size:.8rem;color:rgba(245,236,215,.3)">We open at 3 PM daily. We'll confirm by email.</p>
     </div>
@@ -593,9 +593,10 @@ h1.hero-title span{color:var(--rust)}
     <div class="rv-box">
       <div class="sec-label">Share Your Experience</div>
       <h3 style="font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;margin-bottom:1.2rem">Write a <span style="color:var(--rust)">Review</span></h3>
-      <div class="form-group"><label>Your Name *</label><input type="text" id="rv-name" placeholder="Name"></div>
+      <div class="form-group"><label for="rv-name">Your Name *</label><input type="text" id="rv-name" placeholder="Name"></div>
       <div class="form-group">
-        <label>Rating *</label>
+        <label for="rv-rating">Rating *</label>
+        <input type="hidden" id="rv-rating" value="0">
         <div class="star-picker" id="star-picker">
           <span class="star-pick" onclick="setRating(1)">★</span>
           <span class="star-pick" onclick="setRating(2)">★</span>
@@ -604,8 +605,8 @@ h1.hero-title span{color:var(--rust)}
           <span class="star-pick" onclick="setRating(5)">★</span>
         </div>
       </div>
-      <div class="form-group"><label>Title</label><input type="text" id="rv-title" placeholder="One-line summary"></div>
-      <div class="form-group"><label>Your Review *</label><textarea id="rv-body" placeholder="Tell us about your experience…"></textarea></div>
+      <div class="form-group"><label for="rv-title">Title</label><input type="text" id="rv-title" placeholder="One-line summary"></div>
+      <div class="form-group"><label for="rv-body">Your Review *</label><textarea id="rv-body" placeholder="Tell us about your experience…"></textarea></div>
       <button class="btn-primary" onclick="submitReview()">Submit Review</button>
       <p style="margin-top:.8rem;font-size:.78rem;color:rgba(245,236,215,.3)">Reviews are reviewed by our team before appearing publicly.</p>
     </div>
@@ -638,7 +639,7 @@ h1.hero-title span{color:var(--rust)}
   </div>
   <div class="cart-items" id="cart-items-list"></div>
   <div class="ot-select">
-    <label>Order Type</label>
+    <div class="ot-label">Order Type</div>
     <div class="type-btns">
       <button class="type-btn active" onclick="setOrderType('dine_in',this)">Dine-In</button>
       <button class="type-btn" onclick="setOrderType('pickup',this)">Pickup</button>
@@ -667,17 +668,17 @@ h1.hero-title span{color:var(--rust)}
       <div class="tab" onclick="authTab('register',this)">Create Account</div>
     </div>
     <div id="login-form">
-      <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="email@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+      <div class="form-group"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="email@example.com"></div>
+      <div class="form-group"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn-primary" style="width:100%;margin-top:.5rem" onclick="doLogin()">Sign In</button>
     </div>
     <div id="register-form" style="display:none">
       <div class="form-row">
-        <div class="form-group"><label>Name</label><input type="text" id="reg-name" placeholder="Full name"></div>
-        <div class="form-group"><label>Phone</label><input type="tel" id="reg-phone" placeholder="806-000-0000"></div>
+        <div class="form-group"><label for="reg-name">Name</label><input type="text" id="reg-name" placeholder="Full name"></div>
+        <div class="form-group"><label for="reg-phone">Phone</label><input type="tel" id="reg-phone" placeholder="806-000-0000"></div>
       </div>
-      <div class="form-group"><label>Email</label><input type="email" id="reg-email" placeholder="email@example.com"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="reg-pass" placeholder="Min. 6 characters"></div>
+      <div class="form-group"><label for="reg-email">Email</label><input type="email" id="reg-email" placeholder="email@example.com"></div>
+      <div class="form-group"><label for="reg-pass">Password</label><input type="password" id="reg-pass" placeholder="Min. 6 characters"></div>
       <button class="btn-primary" style="width:100%;margin-top:.5rem" onclick="doRegister()">Create Account</button>
     </div>
   </div>
@@ -709,6 +710,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 const API = 'https://west-texas-sports-grill-backend.onrender.com/api'
+const API_ORIGIN = new URL(API).origin;
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
 let selectedRating = 0;
@@ -1281,14 +1283,14 @@ async function loadAdminMenu() {
         </div>
         <div class="item-form" id="item-form-box" style="display:none">
           <h3 id="item-form-title">Add New Item</h3>
-          <div class="fg"><label>Name *</label><input type="text" id="if-name" placeholder="Item name"></div>
-          <div class="fg"><label>Category *</label><select id="if-cat">${catOpts}</select></div>
-          <div class="fg"><label>Description</label><textarea id="if-desc" placeholder="Describe the item…"></textarea></div>
+          <div class="fg"><label for="if-name">Name *</label><input type="text" id="if-name" placeholder="Item name"></div>
+          <div class="fg"><label for="if-cat">Category *</label><select id="if-cat">${catOpts}</select></div>
+          <div class="fg"><label for="if-desc">Description</label><textarea id="if-desc" placeholder="Describe the item…"></textarea></div>
           <div class="form-2col">
-            <div class="fg"><label>Price ($) *</label><input type="number" id="if-price" step="0.01" min="0" placeholder="12.99"></div>
-            <div class="fg"><label>Calories</label><input type="number" id="if-cal" placeholder="500"></div>
+            <div class="fg"><label for="if-price">Price ($) *</label><input type="number" id="if-price" step="0.01" min="0" placeholder="12.99"></div>
+            <div class="fg"><label for="if-cal">Calories</label><input type="number" id="if-cal" placeholder="500"></div>
           </div>
-          <div class="fg"><label>Allergens</label><input type="text" id="if-allergens" placeholder="nuts, dairy, gluten…"></div>
+          <div class="fg"><label for="if-allergens">Allergens</label><input type="text" id="if-allergens" placeholder="nuts, dairy, gluten…"></div>
           <div style="margin:.6rem 0">
             <label class="cb-row"><input type="checkbox" id="if-featured"> 🔥 Featured on homepage</label>
             <label class="cb-row"><input type="checkbox" id="if-popular"> ⭐ Mark as popular</label>
@@ -1420,7 +1422,8 @@ async function deleteReview(id) {
 
 function resolveImageUrl(path) {
   if(!path) return null;
-  return path.startsWith('http://') || path.startsWith('https://') ? path : `http://localhost:8000${path}`;
+  if(path.startsWith('http://') || path.startsWith('https://')) return path;
+  return new URL(path, API_ORIGIN).href;
 }
 
 async function loadSiteSettings() {
@@ -1524,7 +1527,7 @@ async function applyBackendImages() {
     if(cocktail) document.getElementById('cocktail-img').src = cocktail;
   } catch(e) {}
 }
-
+     
 </script>
 </body>
 </html>
