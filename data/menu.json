@@ -1,0 +1,13 @@
+[{
+  "id": 1,
+  "name": "West Texas Burger",
+  "description": "Juicy beef patty, smoked cheddar, lettuce, pickles, and house sauce.",
+  "price": 13.95,
+  "calories": 780,
+  "category_id": 1,
+  "is_featured": true,
+  "is_popular": true,
+  "is_spicy": false,
+  "is_available": true,
+  "allergens": "gluten, dairy"
+}]

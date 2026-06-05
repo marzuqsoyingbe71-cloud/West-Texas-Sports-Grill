@@ -709,8 +709,8 @@ document.addEventListener('DOMContentLoaded', () => {
   applyBackendImages();
 });
 
-const API = 'https://west-texas-sports-grill-backend.onrender.com/api'
-const API_ORIGIN = new URL(API).origin;
+const API = '/api'
+const API_ORIGIN = window.location.origin;
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
 let selectedRating = 0;
@@ -1429,8 +1429,8 @@ async function deleteReview(id) {
 
 function resolveImageUrl(path) {
   if(!path) return null;
-  if(path.startsWith('http://') || path.startsWith('https://')) return path;
-  return new URL(path, API_ORIGIN).href;
+  if(path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) return path;
+  return (API === '/api' ? '/uploads/' + path.replace(/^\//,'') : new URL(path, API_ORIGIN).href);
 }
 
 async function loadSiteSettings() {
