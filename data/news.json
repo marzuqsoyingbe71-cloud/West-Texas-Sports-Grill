@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "title": "Grand Opening Celebration!",
+    "description": "Join us for an unforgettable grand opening weekend with exclusive cocktails and live music!",
+    "category": "event",
+    "image": "/uploads/1782692380207-image_1.jpg",
+    "date": "2026-07-15",
+    "highlight": true,
+    "created_at": "2026-06-29T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "title": "New Summer Menu Available",
+    "description": "Explore our exciting new summer menu featuring fresh ingredients and creative seasonal dishes.",
+    "category": "menu",
+    "image": "/uploads/1782832309514-TINUADE.png",
+    "date": "2026-06-25",
+    "highlight": false,
+    "created_at": "2026-06-25T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "title": "Live Music Every Weekend",
+    "description": "Enjoy live performances from local artists every Friday and Saturday night. Rock, country, and blues!",
+    "category": "event",
+    "image": "/uploads/1782832164149-download_123.jpg",
+    "date": "2026-06-20",
+    "highlight": true,
+    "created_at": "2026-06-20T00:00:00Z"
+  },
+  {
+    "id": 4,
+    "title": "Pop-up Taco Tuesday",
+    "description": "Limited-time tacos and special margaritas every Tuesday evening!",
+    "category": "event",
+    "date": "2026-06-29",
+    "highlight": true,
+    "image": "/uploads/1782832152299-download_124.jpg",
+    "created_at": "2026-06-29T00:00:41.433Z"
+  }
+]

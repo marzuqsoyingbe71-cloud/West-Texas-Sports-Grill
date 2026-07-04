@@ -1,8 +1,17 @@
 {
-  "hero_image": null,
-  "photo_strip_1": null,
-  "photo_strip_2": null,
-  "photo_strip_3": null,
-  "cocktail_banner_image": null,
-  "menu_bg_image": null
+  "hero_image": "/uploads/1782831918802-a-steak-on-a-wooden-board-with-a-blank-sign-photo.jpg",
+  "photo_strip_1": "/uploads/1782746049307-WhatsApp_Image_2026-05-10_at_01.29.10.jpeg",
+  "photo_strip_2": "/uploads/1782746068108-WhatsApp_Image_2026-05-10_at_00.36.38_(1).jpeg",
+  "photo_strip_3": "/uploads/1782746078007-WhatsApp_Image_2026-05-10_at_01.31.25.jpeg",
+  "cocktail_banner_image": "/uploads/1782746098951-ElevenLabs_image_nano-banana-pro_This_video_f..._2026-02-20T02_18_44_(1).jpg",
+  "menu_bg_image": "/uploads/1782746087479-WhatsApp_Image_2026-05-10_at_00.36.34.jpeg",
+  "gallery_image_1": null,
+  "gallery_image_2": null,
+  "gallery_image_3": null,
+  "gallery_image_4": null,
+  "gallery_images": [
+    "/uploads/1782746119533-image_1.jpg",
+    "/uploads/1782746133062-image_1.jpg",
+    "/uploads/1782746147603-image_3.jpg"
+  ]
 }

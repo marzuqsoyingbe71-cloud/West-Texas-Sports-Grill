@@ -1,0 +1,26 @@
+[
+  {
+    "id": 1,
+    "name": "Admin User",
+    "email": "admin@westtexas.com",
+    "phone": "806-000-0000",
+    "password": "password",
+    "role": "admin"
+  },
+  {
+    "id": 2,
+    "name": "marzuq",
+    "email": "asdfg",
+    "phone": "23456789",
+    "password": "zsdfxgcgvh",
+    "role": "customer"
+  },
+  {
+    "id": 3,
+    "name": "marzuq",
+    "email": "marzuqsoyinge8@gmail.com",
+    "phone": "345679876544",
+    "password": "Marzuqpes2",
+    "role": "customer"
+  }
+]

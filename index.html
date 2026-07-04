@@ -14,15 +14,23 @@
 <style>
 :root {
   --rust:#C0392B; --amber:#E67E22; --cream:#F5ECD7; --dark:#1A1208;
-  --charcoal:#2C2416; --gold:#D4AC0D;
+  --charcoal:#2C2416; --gold:#caa511;
   --success:#27AE60; --danger:#E74C3C; --info:#2980B9;
 }
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{background:var(--dark);color:var(--cream);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden}
+body{background:radial-gradient(circle at top left,rgba(230,126,34,.14),transparent 24%),var(--dark);color:var(--cream);font-family:'Barlow',sans-serif;font-weight:300;overflow-x:hidden}
+img{display:block;max-width:100%;height:auto;image-rendering:auto;-ms-interpolation-mode:bicubic;transform:translateZ(0);backface-visibility:hidden}
+@keyframes heroPan{0%{transform:scale(1) translateY(0)}100%{transform:scale(1.03) translateY(-6px)}}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+@keyframes drift{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glowPulse{0%,100%{box-shadow:0 0 0 rgba(230,126,34,0)}50%{box-shadow:0 0 24px rgba(230,126,34,.24)}}
+@keyframes slowSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(26,18,8,0.96);backdrop-filter:blur(12px);border-bottom:1px solid rgba(192,57,43,0.25)}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(26,18,8,0.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(192,57,43,0.25);box-shadow:0 8px 30px rgba(0,0,0,.22)}
 .nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--amber);cursor:pointer}
 .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
 .nav-links a{color:var(--cream);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;opacity:.75;transition:opacity .2s,color .2s;cursor:pointer}
@@ -39,58 +47,119 @@ nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:cen
 
 /* HERO */
 .hero{min-height:calc(100vh - 70px);display:flex;align-items:center;padding:0 3rem;position:relative;overflow:hidden}
-.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center center;transition:background-image .5s}
-.hero-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,rgba(26,18,8,.94) 0%,rgba(26,18,8,.72) 55%,rgba(26,18,8,.45) 100%);z-index:1}
-.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(192,57,43,.2) 0%,transparent 60%);z-index:2}
+.hero-bg{position:absolute;inset:0;background-size:cover;background-position:center center;background-repeat:no-repeat;transition:background-image .5s;animation:heroPan 16s ease-in-out infinite alternate;transform-origin:center;will-change:transform}
+.hero-bg::before{content:'';position:absolute;inset:0;background:linear-gradient(105deg,rgba(26,18,8,.94) 0%,rgba(26,18,8,.73) 55%,rgba(26,18,8,.42) 100%);z-index:1}
+.hero-bg::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 80% 50%,rgba(192,57,43,.22) 0%,transparent 60%),linear-gradient(180deg,transparent 0%,rgba(0,0,0,.18) 100%);z-index:2}
 .hero-bg-text{position:absolute;right:-1rem;top:50%;transform:translateY(-50%);font-family:'Bebas Neue',sans-serif;font-size:clamp(8rem,18vw,20rem);color:rgba(192,57,43,.06);line-height:1;user-select:none;white-space:nowrap;z-index:3}
-.hero-content{position:relative;z-index:4;max-width:700px}
+.hero-content{position:relative;z-index:4;max-width:700px;animation:fadeInUp .9s ease both}
+.hero-content > *{animation:fadeInUp .9s ease both}
+.hero-content .eyebrow{animation-delay:.05s}
+.hero-content .hero-title{animation-delay:.1s}
+.hero-content .hero-desc{animation-delay:.2s}
+.hero-content .hero-actions{animation-delay:.3s}
+.hero-hint{margin-top:1.4rem;display:inline-block;padding:.6rem 1rem;border:1px solid rgba(255,255,255,.14);border-radius:999px;background:rgba(255,255,255,.08);color:rgba(245,236,215,.8);font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.5px;text-transform:uppercase;box-shadow:0 12px 30px rgba(0,0,0,.15);backdrop-filter:blur(6px)}
 .eyebrow{font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:5px;text-transform:uppercase;color:var(--amber);margin-bottom:1rem;display:flex;align-items:center;gap:.8rem}
 .eyebrow::before{content:'';display:block;width:35px;height:2px;background:var(--amber)}
 h1.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(3.5rem,8vw,8rem);line-height:.95;margin-bottom:1.2rem}
 h1.hero-title span{color:var(--rust)}
-.hero-desc{font-size:1.05rem;line-height:1.7;color:rgba(245,236,215,.78);max-width:500px;margin-bottom:2rem}
+.hero-desc{font-size:1.05rem;line-height:1.7;color:rgba(245,236,215,.78);max-width:500px;margin-bottom:1.2rem}
 .hero-actions{display:flex;gap:1rem;flex-wrap:wrap}
-.btn-primary{background:var(--rust);color:#fff;padding:.9rem 2rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:2px;cursor:pointer;transition:background .2s,transform .2s;display:inline-block;text-decoration:none}
-.btn-primary:hover{background:#a93226;transform:translateY(-2px)}
-.btn-secondary{background:transparent;color:var(--cream);border:1px solid rgba(245,236,215,.35);padding:.9rem 2rem;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:border-color .2s,color .2s;text-decoration:none}
-.btn-secondary:hover{border-color:var(--amber);color:var(--amber)}
+.hero-highlight-card{margin-top:1rem;max-width:560px;padding:1rem 1.1rem;border:1px solid rgba(255,255,255,.14);border-radius:16px;background:rgba(10,8,6,.62);backdrop-filter:blur(10px);box-shadow:0 16px 40px rgba(0,0,0,.24)}
+.hero-highlight-label{display:inline-flex;align-items:center;gap:.45rem;font-family:'Barlow Condensed',sans-serif;font-size:.72rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:.55rem}
+.hero-highlight-label::before{content:'✦';font-size:.8rem;color:var(--rust)}
+.hero-highlight-title{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1px;color:var(--cream);margin-bottom:.35rem}
+.hero-highlight-desc{font-size:.92rem;line-height:1.6;color:rgba(245,236,215,.72)}
+.hero-highlight-link{margin-top:.8rem;border:none;background:linear-gradient(135deg,var(--rust),#a93226);color:#fff;padding:.55rem .9rem;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-size:.78rem;letter-spacing:1.2px;text-transform:uppercase;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.hero-highlight-link:hover{transform:translateY(-1px);box-shadow:0 10px 20px rgba(192,57,43,.24)}
+.hero-highlight-dots{display:flex;gap:.4rem;margin-top:.8rem}
+.hero-highlight-dot{width:8px;height:8px;border-radius:50%;background:rgba(245,236,215,.28);transition:all .2s}
+.hero-highlight-dot.active{background:var(--amber);transform:scale(1.2)}
+
+/* HERO PARTICLE CANVAS */
+#hero-canvas{position:absolute;left:0;top:0;width:100%;height:100%;z-index:2;pointer-events:none;mix-blend-mode:screen}
+.btn-primary{background:linear-gradient(135deg,var(--rust),#a93226);color:#fff;padding:.95rem 2.1rem;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border:none;border-radius:999px;cursor:pointer;transition:transform .25s,box-shadow .25s,filter .25s;display:inline-block;text-decoration:none;box-shadow:0 10px 25px rgba(192,57,43,.28)}
+.btn-primary:hover{transform:translateY(-2px) scale(1.01);box-shadow:0 14px 30px rgba(192,57,43,.35);filter:saturate(1.05);animation:glowPulse 1.2s ease-in-out 1}
+.btn-secondary{background:rgba(255,255,255,.04);color:var(--cream);border:1px solid rgba(245,236,215,.25);padding:.95rem 2.1rem;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;border-radius:999px;cursor:pointer;transition:border-color .2s,color .2s,transform .2s,background .2s,text-shadow .2s;text-decoration:none}
+.btn-secondary:hover{border-color:var(--amber);color:var(--amber);transform:translateY(-2px);background:rgba(230,126,34,.08);text-shadow:0 0 10px rgba(230,126,34,.24)}
 .hero-stats{position:absolute;bottom:2.5rem;right:3rem;display:flex;gap:2.5rem;z-index:4}
+.hero-stats .stat{animation:drift 5.8s ease-in-out infinite;animation-delay:var(--delay,0s)}
+.hero-stats .stat:nth-child(2){animation-delay:.6s}
+.hero-stats .stat:nth-child(3){animation-delay:1.2s}
 .stat-num{font-family:'Bebas Neue',sans-serif;font-size:2.5rem;color:var(--amber);line-height:1}
 .stat-label{font-size:.65rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.5);margin-top:.25rem}
 
 /* INFO BAR */
-.info-bar{background:var(--charcoal);padding:1.2rem 3rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05)}
+.info-bar{background:linear-gradient(90deg,rgba(44,36,22,.95),rgba(44,36,22,.78));padding:1.2rem 3rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,.05);box-shadow:inset 0 -1px 0 rgba(255,255,255,.04)}
 .info-item{display:flex;align-items:center;gap:.6rem;font-size:.85rem;color:rgba(245,236,215,.65);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 .badge-open{background:rgba(39,174,96,.15);border:1px solid rgba(39,174,96,.4);color:#5dbb85;padding:.2rem .7rem;border-radius:2px;font-size:.72rem;letter-spacing:1px;font-weight:600}
 
 /* PHOTO STRIP */
-.photo-strip{display:grid;grid-template-columns:1fr 1fr 1fr;height:360px;overflow:hidden}
-.photo-strip-item{position:relative;overflow:hidden;cursor:pointer}
-.photo-strip-item img{width:100%;height:100%;object-fit:cover;transition:transform .6s ease}
-.photo-strip-item:hover img{transform:scale(1.07)}
-.photo-strip-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,18,8,.65) 0%,transparent 60%)}
+.photo-strip{display:grid;grid-template-columns:1fr 1fr 1fr;height:360px;overflow:hidden;border-top:1px solid rgba(255,255,255,.04)}
+.photo-strip-item{position:relative;overflow:hidden;cursor:pointer;transition:transform .3s ease,box-shadow .3s ease}
+.photo-strip-item:hover{transform:translateY(-6px) scale(1.01);box-shadow:0 16px 35px rgba(0,0,0,.24)}
+.photo-strip-item img{width:100%;height:100%;object-fit:cover;object-position:center;display:block;transition:transform .7s ease,filter .7s ease}
+.photo-strip-item:hover img{transform:scale(1.03);filter:saturate(1.05)}
+.photo-strip-item::after{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(26,18,8,.75) 0%,rgba(26,18,8,.2) 60%,transparent 100%)}
 .photo-label{position:absolute;bottom:1.2rem;left:1.2rem;z-index:2;font-family:'Bebas Neue',sans-serif;font-size:1.3rem;letter-spacing:2px;color:var(--cream);text-shadow:0 2px 8px rgba(0,0,0,.5)}
 .photo-sublabel{position:absolute;bottom:.8rem;left:1.2rem;margin-top:1.5rem;z-index:2;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);text-shadow:0 1px 4px rgba(0,0,0,.5)}
 
+/* GALLERY */
+.section-head{max-width:760px;margin-bottom:2rem}
+.section-copy{font-size:.95rem;line-height:1.7;color:rgba(245,236,215,.62);margin-top:.8rem}
+.gallery-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.2rem}
+.gallery-card{position:relative;overflow:hidden;border-radius:4px;border:1px solid rgba(255,255,255,.08);background:rgba(26,18,8,.5);min-height:240px;animation:fadeInUp .8s ease both}
+.gallery-card img{width:100%;height:100%;min-height:240px;object-fit:cover;object-position:center;background:rgba(26,18,8,.35);display:block;transition:transform .7s ease,filter .7s ease;padding:0}
+.gallery-card:hover img{transform:scale(1.03);filter:saturate(1.05)}
+.gallery-card:hover{transform:translateY(-4px) scale(1.01)}
+.gallery-card::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 20%,rgba(26,18,8,.8) 100%);pointer-events:none}
+.gallery-card-overlay{position:absolute;left:1rem;right:1rem;bottom:1rem;z-index:2}
+.gallery-card-overlay span{font-family:'Barlow Condensed',sans-serif;font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber)}
+.gallery-card-overlay strong{display:block;font-family:'Bebas Neue',sans-serif;font-size:1.2rem;letter-spacing:1px;margin-top:.25rem}
+.gallery-empty{grid-column:1 / -1;background:rgba(26,18,8,.4);border:1px dashed rgba(255,255,255,.12);border-radius:4px;padding:2rem;text-align:center;color:rgba(245,236,215,.55);font-size:.95rem;line-height:1.7}
+
+/* NEWS PAGE */
+.news-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.8rem;padding:4rem 3rem}
+.news-card{position:relative;border-radius:12px;overflow:hidden;background:linear-gradient(135deg,rgba(192,57,43,.15),rgba(230,126,34,.08));border:2px solid rgba(230,126,34,.25);transition:transform .3s ease,box-shadow .3s ease,border-color .3s ease;animation:fadeInUp .8s ease both;cursor:pointer}
+.news-card:nth-child(2){animation-delay:.1s}
+.news-card:nth-child(3){animation-delay:.2s}
+.news-card:nth-child(4){animation-delay:.3s}
+.news-card:nth-child(5){animation-delay:.4s}
+.news-card:nth-child(6){animation-delay:.5s}
+.news-card:hover{transform:translateY(-8px) scale(1.02);box-shadow:0 20px 50px rgba(192,57,43,.3);border-color:var(--rust)}
+.news-image{width:100%;height:220px;object-fit:cover;object-position:center;background:linear-gradient(135deg,rgba(192,57,43,.1),rgba(230,126,34,.05));display:block}
+.news-placeholder{width:100%;height:220px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(192,57,43,.2),rgba(230,126,34,.12));color:rgba(245,236,215,.3);font-size:.95rem;text-align:center;padding:1rem}
+.news-card-content{padding:1.8rem}
+.news-highlight{position:absolute;top:.8rem;right:.8rem;background:linear-gradient(135deg,var(--rust),#a93226);color:#fff;padding:.4rem .9rem;border-radius:999px;font-family:'Barlow Condensed',sans-serif;font-size:.7rem;letter-spacing:2px;text-transform:uppercase;font-weight:700;box-shadow:0 4px 15px rgba(192,57,43,.4)}
+.news-category{display:inline-block;background:rgba(230,126,34,.15);border:1px solid rgba(230,126,34,.3);color:var(--amber);padding:.3rem .7rem;border-radius:4px;font-family:'Barlow Condensed',sans-serif;font-size:.65rem;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.8rem;font-weight:600}
+.news-title{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:1px;margin-bottom:.6rem;color:var(--cream);line-height:1.2}
+.news-desc{font-size:.92rem;color:rgba(245,236,215,.65);line-height:1.65;margin-bottom:1rem}
+.news-date{display:flex;align-items:center;gap:.4rem;font-size:.75rem;color:rgba(245,236,215,.45);letter-spacing:.5px}
+.news-empty{grid-column:1 / -1;background:rgba(26,18,8,.4);border:2px dashed rgba(230,126,34,.2);border-radius:8px;padding:3rem;text-align:center;color:rgba(245,236,215,.55)}
+.news-empty-icon{font-size:3rem;margin-bottom:1rem}
+.news-empty-text{font-size:1rem;margin-bottom:.5rem}
+.news-empty-desc{font-size:.85rem;color:rgba(245,236,215,.4)}
+
 /* FEATURES */
 .features{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1.2rem;padding:4rem 3rem;background:var(--charcoal)}
-.feat-card{background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:1.8rem;transition:border-color .3s,transform .3s}
-.feat-card:hover{border-color:rgba(192,57,43,.3);transform:translateY(-3px)}
+.feat-card{background:linear-gradient(135deg,rgba(26,18,8,.7),rgba(44,36,22,.65));border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.8rem;transition:border-color .3s,transform .3s,box-shadow .3s;box-shadow:0 12px 24px rgba(0,0,0,.16)}
+.feat-card:hover{border-color:rgba(192,57,43,.3);transform:translateY(-4px);box-shadow:0 16px 32px rgba(0,0,0,.24)}
 .feat-icon{font-size:2rem;margin-bottom:.8rem}
 .feat-title{font-family:'Barlow Condensed',sans-serif;font-size:1.1rem;font-weight:700;letter-spacing:1px;margin-bottom:.4rem}
 .feat-desc{font-size:.85rem;color:rgba(245,236,215,.55);line-height:1.5}
 
 /* COCKTAIL BANNER */
-.cocktail-banner{position:relative;height:440px;overflow:hidden;display:flex;align-items:center;justify-content:center}
-.cocktail-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center}
-.cocktail-banner::before{content:'';position:absolute;inset:0;background:rgba(26,18,8,.62);z-index:1}
+.cocktail-banner{position:relative;height:440px;overflow:hidden;display:flex;align-items:center;justify-content:center;margin:0 1rem;border-radius:24px;box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.cocktail-banner-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;transform:none}
+.cocktail-banner::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(26,18,8,.78) 0%,rgba(26,18,8,.55) 55%,rgba(26,18,8,.72) 100%);z-index:1}
 .cocktail-banner-content{position:relative;z-index:2;text-align:center;padding:2rem;max-width:600px}
 .cocktail-banner-content h2{font-family:'Bebas Neue',sans-serif;font-size:clamp(2.5rem,6vw,5rem);letter-spacing:3px;margin-bottom:.5rem}
 .cocktail-banner-content p{color:rgba(245,236,215,.72);font-size:1.05rem;margin:0 auto 1.5rem;line-height:1.6}
 
 /* SECTIONS */
 .section{padding:4rem 3rem}
-.section-alt{background:var(--charcoal)}
+.section-alt{background:linear-gradient(180deg,rgba(44,36,22,.98),rgba(26,18,8,.95))}
+.reveal{opacity:0;transform:translateY(24px) scale(.985);transition:opacity .85s cubic-bezier(.2,.7,.2,1),transform .85s cubic-bezier(.2,.7,.2,1)}
+.reveal.visible{opacity:1;transform:translateY(0) scale(1)}
 .sec-label{font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:5px;text-transform:uppercase;color:var(--amber);margin-bottom:.6rem;display:flex;align-items:center;gap:.6rem}
 .sec-label::after{content:'';height:1px;background:rgba(230,126,34,.3);width:50px}
 .sec-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(2rem,4vw,3.5rem);line-height:1;margin-bottom:1.5rem}
@@ -114,7 +183,15 @@ h1.hero-title span{color:var(--rust)}
 .search-input::placeholder{color:rgba(245,236,215,.35)}
 .search-input:focus{border-color:rgba(230,126,34,.5)}
 .menu-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
-.menu-card{background:var(--charcoal);border:1px solid rgba(255,255,255,.06);border-radius:4px;padding:1.5rem;display:flex;flex-direction:column;transition:border-color .3s,transform .3s;position:relative;overflow:hidden}
+.menu-group{margin-bottom:2rem}
+.menu-group-title{font-family:'Bebas Neue',sans-serif;font-size:1.8rem;letter-spacing:2px;color:var(--amber);margin-bottom:1rem}
+.specials-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem;margin-bottom:2rem}
+.menu-group-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.2rem}
+.menu-card{background:linear-gradient(135deg,rgba(44,36,22,.95),rgba(26,18,8,.9));border:1px solid rgba(255,255,255,.06);border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;transition:border-color .3s,transform .3s,box-shadow .3s;position:relative;overflow:hidden;box-shadow:0 14px 30px rgba(0,0,0,.16)}
+.menu-card:hover{transform:translateY(-8px) scale(1.01);box-shadow:0 20px 36px rgba(0,0,0,.24)}
+.menu-card-image{width:100%;height:180px;border-radius:10px;overflow:hidden;background:rgba(26,18,8,.35);border:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;margin-bottom:1rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
+.menu-card-image img{width:100%;height:100%;object-fit:cover;object-position:center;padding:0;background:rgba(26,18,8,.2)}
+.menu-card-image .placeholder{font-size:.82rem;color:rgba(245,236,215,.45);text-align:center;line-height:1.6}
 .menu-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--rust),var(--amber));transform:scaleX(0);transition:transform .3s;transform-origin:left}
 .menu-card:hover{border-color:rgba(192,57,43,.3);transform:translateY(-3px)}
 .menu-card:hover::after{transform:scaleX(1)}
@@ -270,6 +347,10 @@ h1.hero-title span{color:var(--rust)}
 .fg input:focus,.fg textarea:focus,.fg select:focus{border-color:rgba(230,126,34,.5)}
 .fg textarea{resize:vertical;min-height:60px}
 .fg select option{background:var(--charcoal);color:var(--cream)}
+.payment-grid{display:flex;gap:.75rem;flex-wrap:wrap}
+.payment-option{flex:1 1 45%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:4px;padding:.85rem 1rem;cursor:pointer;transition:border-color .2s}
+.payment-option input{margin-right:.5rem}
+.payment-option:hover{border-color:rgba(230,126,34,.5)}
 .cb-row{display:flex;align-items:center;gap:.5rem;margin-bottom:.5rem;font-family:'Barlow Condensed',sans-serif;font-size:.85rem;letter-spacing:.5px;cursor:pointer;color:rgba(245,236,215,.75)}
 .cb-row input[type=checkbox]{width:auto;cursor:pointer;accent-color:var(--rust)}
 .form-2col{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
@@ -308,6 +389,12 @@ h1.hero-title span{color:var(--rust)}
 .loading{color:rgba(245,236,215,.35);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;padding:2rem 0;text-align:center;animation:blink 1.2s infinite}
 @keyframes blink{0%,100%{opacity:.3}50%{opacity:.8}}
 
+select option {
+  background: var(--charcoal);
+  color: var(--cream);
+  padding: .4rem .5rem;
+}
+
 @media(max-width:900px){
   nav{padding:.8rem 1.2rem}
   .nav-links{display:none}
@@ -338,6 +425,7 @@ h1.hero-title span{color:var(--rust)}
   <ul class="nav-links">
     <li><a onclick="showPage('home')">Home</a></li>
     <li><a onclick="showPage('menu')">Menu</a></li>
+    <li><a onclick="showPage('news')">News & Events</a></li>
     <li><a onclick="showPage('reservations')">Reserve</a></li>
     <li><a onclick="showPage('track')">Track Order</a></li>
     <li><a onclick="showPage('reviews')">Reviews</a></li>
@@ -355,6 +443,7 @@ h1.hero-title span{color:var(--rust)}
 <div class="page active" id="page-home">
   <section class="hero" id="hero-section">
     <div class="hero-bg" id="hero-bg"></div>
+    <canvas id="hero-canvas" aria-hidden="true"></canvas>
     <div class="hero-bg-text">GRILL</div>
     <div class="hero-content">
       <div class="eyebrow">Canyon, Texas · Live Music · Cold Drinks</div>
@@ -363,6 +452,13 @@ h1.hero-title span{color:var(--rust)}
       <div class="hero-actions">
         <button class="btn-primary" onclick="showPage('menu')">Order Now</button>
         <button class="btn-secondary" onclick="showPage('reservations')">Reserve a Table</button>
+      </div>
+      <div class="hero-highlight-card" id="hero-highlight-card">
+        <div class="hero-highlight-label" id="hero-highlight-label">What’s New</div>
+        <div class="hero-highlight-title" id="hero-highlight-title">Loading updates…</div>
+        <div class="hero-highlight-desc" id="hero-highlight-desc">Fresh specials, events, and announcements will appear here.</div>
+        <button class="hero-highlight-link" onclick="showPage('news')">See All Updates</button>
+        <div class="hero-highlight-dots" id="hero-highlight-dots"></div>
       </div>
     </div>
     <div class="hero-stats">
@@ -400,6 +496,14 @@ h1.hero-title span{color:var(--rust)}
   </div>
 
   <!-- Features -->
+  <section class="section section-alt">
+    <div class="section-head">
+      <div class="sec-label">Live Gallery</div>
+      <h2 class="sec-title">Fresh moments from the grill <span>in motion</span></h2>
+    </div>
+    <div id="gallery-grid" class="gallery-grid"></div>
+  </section>
+
   <div class="features">
     <div class="feat-card"><div class="feat-icon">🍔</div><div class="feat-title">Bold Burgers</div><div class="feat-desc">West Texas Burger, Jalapeño Popper, BBQ Bacon — all made to impress.</div></div>
     <div class="feat-card"><div class="feat-icon">🍸</div><div class="feat-title">Craft Cocktails</div><div class="feat-desc">Our legendary Lemon Drop Martini is worth the drive alone.</div></div>
@@ -474,6 +578,20 @@ h1.hero-title span{color:var(--rust)}
       <a onclick="showPage('reservations')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Reserve</a>
       <a onclick="showPage('reviews')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Reviews</a>
     </div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:rgba(245,236,215,.35);letter-spacing:1px">
+      <a href="https://instagram.com/west.texas.sports.grill" target="_blank" rel="noopener noreferrer" title="Visit Instagram" style="display:inline-flex;align-items:center;gap:.6rem;color:rgba(245,236,215,.75);text-decoration:none;transition:all .2s" onmouseover="this.style.color='var(--amber)';this.style.transform='translateY(-1px)'" onmouseout="this.style.color='rgba(245,236,215,.75)';this.style.transform='translateY(0)'">
+        <span style="width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:linear-gradient(45deg,#f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);box-shadow:0 6px 18px rgba(0,0,0,.25)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5zm5.75-3.25a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25z"/></svg>
+        </span>
+        <span>@west.texas.sports.grill</span>
+      </a>
+      <a href="https://facebook.com/WestTexasSportsGrill" target="_blank" rel="noopener noreferrer" title="Visit Facebook" style="display:inline-flex;align-items:center;gap:.6rem;color:rgba(245,236,215,.75);text-decoration:none;transition:all .2s" onmouseover="this.style.color='var(--amber)';this.style.transform='translateY(-1px)'" onmouseout="this.style.color='rgba(245,236,215,.75)';this.style.transform='translateY(0)'">
+        <span style="width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:#1877F2;box-shadow:0 6px 18px rgba(0,0,0,.25)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M13.5 20v-7h2.35l.35-2.7h-2.7V3.9c0-.78.22-1.31 1.34-1.31H16V.1c-.23-.03-1.02-.1-1.94-.1-1.93 0-3.25 1.18-3.25 3.35v1.95H8.5V13h2.75v7h2.25z"/></svg>
+        </span>
+        <span>/WestTexasSportsGrill</span>
+      </a>
+    </div>
     <div style="font-size:.75rem;color:rgba(245,236,215,.25);font-family:'Barlow Condensed';letter-spacing:1px">© 2026 West Texas Sports Grill · Canyon, TX</div>
   </footer>
 </div>
@@ -483,6 +601,10 @@ h1.hero-title span{color:var(--rust)}
   <section class="section">
     <div class="sec-label">What We Serve</div>
     <h2 class="sec-title">Our <span>Menu</span></h2>
+    <div class="menu-group">
+      <div class="menu-group-title">Weekly Specials</div>
+      <div class="specials-grid" id="weekly-specials-grid"><div class="no-data">No weekly specials yet. Add them from the admin menu with a weekly special setting.</div></div>
+    </div>
     <div class="menu-controls">
       <div class="cat-filters" id="cat-filters">
         <button class="cat-btn active" onclick="filterMenu('all',this)">🍽️ All</button>
@@ -523,6 +645,23 @@ h1.hero-title span{color:var(--rust)}
         <div class="form-group"><label for="co-address">Delivery Address *</label><input type="text" id="co-address" placeholder="Street address, Canyon TX"></div>
       </div>
       <div class="form-group"><label for="co-notes">Special Instructions</label><textarea id="co-notes" placeholder="Allergies, cooking preferences, extra sauce…"></textarea></div>
+      <div class="form-group">
+        <label>Payment Method</label>
+        <div class="payment-grid" id="payment-methods-grid">
+          <div style="color:rgba(245,236,215,.5);font-size:.88rem">Loading payment methods…</div>
+        </div>
+        <div id="checkout-payment-note" style="font-size:.82rem;color:rgba(245,236,215,.6);margin-top:.5rem">Pickup and dine-in orders can be paid when you arrive.</div>
+      </div>
+      <div id="payment-confirmation" style="display:none;margin-bottom:1rem;padding:1rem;border:1px solid rgba(255,255,255,.08);border-radius:4px;background:rgba(255,255,255,.02)">
+        <p style="margin:0 0 .8rem;color:rgba(245,236,215,.7);">Click below to start hosted checkout or confirm the pickup order.</p>
+        <button class="btn-primary" style="width:100%" onclick="confirmPayment()">Continue to Payment</button>
+      </div>
+      <div id="payment-waiting-banner" style="display:none;margin-bottom:1rem;padding:1rem;border:1px solid rgba(52,152,219,.3);border-radius:4px;background:rgba(52,152,219,.08);color:rgba(245,236,215,.95);">
+        <div style="display:flex;align-items:center;gap:.75rem">
+          <div class="spinner"></div>
+          <div id="payment-waiting-text">Waiting for payment confirmation…</div>
+        </div>
+      </div>
       <button class="btn-primary" style="width:100%" onclick="submitOrder()">Place Order 🤠</button>
     </div>
   </section>
@@ -577,6 +716,22 @@ h1.hero-title span{color:var(--rust)}
   </section>
 </div>
 
+<!-- ══ NEWS & EVENTS ══ -->
+<div class="page" id="page-news">
+  <section class="section">
+    <div class="sec-label">Latest Updates</div>
+    <h2 class="sec-title">News & <span style="color:var(--rust)">Events</span></h2>
+    <p class="section-copy" style="max-width:600px;margin-bottom:3rem">Stay updated with the latest happenings at West Texas Sports Grill. From special events and promotions to menu updates and exciting announcements!</p>
+  </section>
+  <div class="news-grid" id="news-grid">
+    <div class="news-empty">
+      <div class="news-empty-icon">📰</div>
+      <div class="news-empty-text">No news yet</div>
+      <div class="news-empty-desc">Check back soon for exciting updates!</div>
+    </div>
+  </div>
+</div>
+
 <!-- ══ REVIEWS ══ -->
 <div class="page" id="page-reviews">
   <section class="section">
@@ -624,7 +779,8 @@ h1.hero-title span{color:var(--rust)}
       <div class="anav" onclick="adminTab('menu',this)">🍔 Menu Manager</div>
       <div class="anav" onclick="adminTab('categories',this)">🗂 Categories</div>
       <div class="anav" onclick="adminTab('reviews',this)">⭐ Reviews</div>
-      <div class="anav" onclick="adminTab('settings',this)">🖼 Site Images</div>
+      <div class="anav" onclick="adminTab('news',this)">📰 News & Events</div>
+      <div class="anav" onclick="adminTab('settings',this)">⚙️ Settings</div>
     </div>
     <div class="admin-content" id="admin-content"><div class="loading">Loading…</div></div>
   </div>
@@ -688,8 +844,9 @@ h1.hero-title span{color:var(--rust)}
 // Images injected from images.js
 document.addEventListener('DOMContentLoaded', () => {
   // Set images from the injected JS constants
-  if(typeof IMG1 !== 'undefined') {
-    document.getElementById('hero-bg').style.backgroundImage = `url(${IMG1})`;
+  const heroBg = document.getElementById('hero-bg');
+  if(typeof IMG1 !== 'undefined' && heroBg && !heroBg.style.backgroundImage) {
+    heroBg.style.backgroundImage = `url(${IMG1})`;
     document.getElementById('photo1').src = IMG1;
   }
   if(typeof IMG2 !== 'undefined') {
@@ -699,6 +856,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(typeof IMG3 !== 'undefined') {
     document.getElementById('photo3').src = IMG3;
   }
+  setupLiveAnimations();
   updateCartUI();
   updateAuthUI();
   const today = new Date().toISOString().split('T')[0];
@@ -706,11 +864,50 @@ document.addEventListener('DOMContentLoaded', () => {
   if(di) di.min = today;
   loadFeaturedItems();
   loadHomeReviews();
+  loadHeroHighlights();
   applyBackendImages();
+  handlePaymentReturn();
 });
 
-const API = '/api'
-const API_ORIGIN = window.location.origin;
+function setupLiveAnimations() {
+  const targets = document.querySelectorAll('.section, .features, .gallery-card, .feat-card, .menu-card, .review-card, .photo-strip-item, .cocktail-banner, .map-info, .rv-box, .res-form, .info-bar, .hero-stats');
+  targets.forEach((el, index) => {
+    el.classList.add('reveal');
+    el.style.transitionDelay = `${Math.min(index * 45, 280)}ms`;
+  });
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if(entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  targets.forEach((el) => observer.observe(el));
+
+  const hero = document.getElementById('hero-section');
+  const heroBg = document.getElementById('hero-bg');
+  if(hero && heroBg) {
+    hero.addEventListener('mousemove', (event) => {
+      const rect = hero.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      heroBg.style.animation = 'none';
+      heroBg.style.transform = `translate3d(${x * 10}px, ${y * 8}px, 0) scale(1.04)`;
+    });
+    hero.addEventListener('mouseleave', () => {
+      heroBg.style.animation = 'heroPan 16s ease-in-out infinite alternate';
+      heroBg.style.transform = '';
+    });
+  }
+}
+
+const API_REMOTE = 'https://west-texas-sports-grill-backend.onrender.com/api';
+const API_LOCAL = 'http://localhost:3000/api';
+const API = (['localhost','127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
+const API_ORIGIN = new URL(API).origin;
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
 let selectedRating = 0;
@@ -719,8 +916,18 @@ let token = localStorage.getItem('wtsg_token') || '';
 let currentUser = JSON.parse(localStorage.getItem('wtsg_user') || 'null');
 let allMenuItems = [];
 let allCategories = [];
+let currentMenuFilter = 'all';
 let lastOrderId = null;
 let editingItemId = null;
+let editingCategoryId = null;
+let paymentMethod = 'stripe';
+let heroHighlights = [];
+let heroHighlightIndex = 0;
+let heroHighlightTimer = null;
+let heroSlideImages = [];
+let heroSlideIndex = 0;
+let heroSlideTimer = null;
+let paymentConfirmed = false;
 
 // ── Page routing ────────────────────────────────────────────────────────
 function showPage(name) {
@@ -730,7 +937,9 @@ function showPage(name) {
   pg.classList.add('active');
   window.scrollTo(0,0);
   if(name === 'menu') loadMenuPage();
+  if(name === 'news') loadNews();
   if(name === 'reviews') loadReviews();
+  if(name === 'checkout') initCheckoutPaymentOptions();
   if(name === 'admin') {
     if(!isAdmin()) { toast('Admin access required','error'); showPage('home'); return; }
     document.querySelectorAll('.anav').forEach(i=>i.classList.remove('active'));
@@ -741,32 +950,315 @@ function showPage(name) {
 function isAdmin() { return currentUser && currentUser.role === 'admin'; }
 
 // ── API ─────────────────────────────────────────────────────────────────
+async function handlePaymentReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const orderId = params.get('order_id');
+  if(!orderId) return;
+  if(params.get('stripe_cancel') === '1' || params.get('paypal_cancel') === '1') {
+    toast(`Payment canceled for order #${orderId}.`, 'info');
+    window.history.replaceState({}, document.title, window.location.pathname);
+    return;
+  }
+  if(params.get('stripe_success') === '1' || params.get('paypal_return') === '1') {
+    showPaymentWaiting(`Waiting for payment confirmation for order #${orderId}…`);
+    toast(`Payment completed for order #${orderId}. Waiting for confirmation…`, 'success');
+    window.history.replaceState({}, document.title, window.location.pathname);
+    await pollOrderStatus(orderId);
+  }
+}
+
+// ── Hero Particles ─────────────────────────────────────────────────────
+class Particle {
+  constructor(w,h){
+    this.reset(w,h);
+  }
+  reset(w,h){
+    this.x = Math.random()*w;
+    this.y = Math.random()*h;
+    this.vx = (Math.random()-0.5)*0.3;
+    this.vy = -0.15 - Math.random()*0.35;
+    this.size = 0.6 + Math.random()*2.4;
+    this.alpha = 0.08 + Math.random()*0.22;
+    this.ttl = 60 + Math.random()*160;
+  }
+  step(w,h){
+    this.x += this.vx;
+    this.y += this.vy;
+    this.ttl--;
+    if(this.ttl<=0 || this.y < -20 || this.x < -40 || this.x > w+40) this.reset(w,h);
+  }
+}
+
+function startHeroParticles() {
+  const canvas = createHeroCanvas();
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  let w = canvas.clientWidth; let h = canvas.clientHeight;
+  const DPR = Math.max(1, window.devicePixelRatio || 1);
+  let particles = [];
+  let running = true;
+  function resize(){
+    w = canvas.clientWidth; h = canvas.clientHeight;
+    // scale canvas according to device pixel ratio but cap to avoid huge bitmaps
+    const capDPR = DPR > 1.5 ? 1.5 : DPR;
+    canvas.width = Math.floor(w * capDPR);
+    canvas.height = Math.floor(h * capDPR);
+    ctx.setTransform(capDPR,0,0,capDPR,0,0);
+  }
+
+  function computeCount(){
+    // base density relative to viewport area, tuned for performance
+    const area = Math.max(60000, w*h);
+    let base = Math.round(area / 90000); // around 1 particle per 90k px
+    const isSmallScreen = window.innerWidth < 820 || window.innerHeight < 600;
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    // mobile / small screens should use fewer particles for smoother animation
+    if(isSmallScreen) base = Math.min(base, 40);
+    if(isMobile) base = Math.min(base, 28);
+    // clamp
+    base = Math.min(Math.max(base, 8), 100);
+    // reduce for low-power devices or reduced-motion
+    if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) base = Math.min(base, 18);
+    if(navigator.hardwareConcurrency && navigator.hardwareConcurrency < 3) base = Math.min(base, 20);
+    return base;
+  }
+
+  function init(){
+    const n = computeCount();
+    particles = new Array(n).fill(0).map(()=>new Particle(w,h));
+  }
+
+  let mouse = {x:-9999,y:-9999,last:0};
+  canvas.addEventListener('mousemove', (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = ev.clientX - rect.left; mouse.y = ev.clientY - rect.top; mouse.last = Date.now();
+  });
+  // click burst
+  canvas.addEventListener('click', (ev)=>{
+    const rect = canvas.getBoundingClientRect();
+    const cx = ev.clientX - rect.left; const cy = ev.clientY - rect.top;
+    for(let i=0;i<18;i++){
+      const b = new Particle(w,h);
+      b.x = cx; b.y = cy;
+      const ang = Math.random()*Math.PI*2;
+      const sp = 0.8 + Math.random()*2.6;
+      b.vx = Math.cos(ang)*sp*2;
+      b.vy = Math.sin(ang)*sp*2 - Math.random()*1.4;
+      b.size = 1.2 + Math.random()*3.8; b.alpha = 0.5 + Math.random()*0.4; b.ttl = 26 + Math.random()*48;
+      particles.push(b);
+    }
+    if(particles.length > 240) particles = particles.slice(particles.length-240);
+  });
+
+  function draw() {
+    if(!running) return;
+    ctx.clearRect(0,0,w,h);
+    // subtle ambient gradient
+    const g = ctx.createLinearGradient(0,0, w*0.8, h);
+    g.addColorStop(0,'rgba(230,126,34,0.02)');
+    g.addColorStop(1,'rgba(255,255,255,0)');
+    ctx.fillStyle = g; ctx.fillRect(0,0,w,h);
+
+    const now = Date.now();
+    particles.forEach(p=>{
+      // gentle attraction to mouse if recent
+      if(now - mouse.last < 400) {
+        const dx = mouse.x - p.x; const dy = mouse.y - p.y; const d2 = dx*dx+dy*dy;
+        if(d2 < 90000){ p.vx += (dx/20000); p.vy += (dy/20000); }
+      }
+      p.step(w,h);
+      ctx.beginPath();
+      const rad = Math.max(1, p.size*3);
+      const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, rad*4);
+      // warmer, amber-tinted particles
+      grad.addColorStop(0, `rgba(255,230,160,${Math.min(0.8,p.alpha+0.06)})`);
+      grad.addColorStop(0.5, `rgba(255,200,110,${p.alpha*0.6})`);
+      grad.addColorStop(1, 'rgba(255,200,110,0)');
+      ctx.fillStyle = grad;
+      ctx.arc(p.x, p.y, rad, 0, Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  function stop(){ running=false; }
+
+  resize(); init(); draw();
+  // lightweight resize handling
+  let resTO = null;
+  window.addEventListener('resize', ()=>{ clearTimeout(resTO); resTO = setTimeout(()=>{ resize(); init(); }, 120); });
+  return { stop };
+}
+
+let _heroParticlesHandle = null;
+function createHeroCanvas() {
+  const canvas = document.getElementById('hero-canvas');
+  if(canvas) return canvas;
+  const hero = document.getElementById('hero-section');
+  if(!hero) return null;
+  const newCanvas = document.createElement('canvas');
+  newCanvas.id = 'hero-canvas';
+  newCanvas.setAttribute('aria-hidden', 'true');
+  newCanvas.style.pointerEvents = 'none';
+  hero.insertBefore(newCanvas, document.getElementById('hero-bg').nextSibling);
+  return newCanvas;
+}
+
+function ensureHeroParticles(){
+  if(_heroParticlesHandle) return;
+  _heroParticlesHandle = startHeroParticles();
+}
+
+function disableHeroParticles(){
+  if(_heroParticlesHandle && _heroParticlesHandle.stop) {
+    _heroParticlesHandle.stop();
+  }
+  _heroParticlesHandle = null;
+  const c = document.getElementById('hero-canvas');
+  if(c) c.remove();
+}
+
+// start particles after DOM ready & when hero visible
+document.addEventListener('DOMContentLoaded', () => {
+  const hero = document.getElementById('hero-section');
+  if(!hero) return;
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting) ensureHeroParticles();
+    });
+  }, {threshold: 0.25});
+  io.observe(hero);
+});
+
+// Respect reduced motion: stop animation if user prefers reduced motion
+if(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  disableHeroParticles();
+}
+
+
+function showPaymentWaiting(message) {
+  const banner = document.getElementById('payment-waiting-banner');
+  const text = document.getElementById('payment-waiting-text');
+  if(banner && text) {
+    text.textContent = message;
+    banner.style.display = 'block';
+  }
+}
+
+function hidePaymentWaiting() {
+  const banner = document.getElementById('payment-waiting-banner');
+  if(banner) banner.style.display = 'none';
+}
+
+async function pollOrderStatus(orderId) {
+  const timeoutMs = 3 * 60 * 1000;
+  const intervalMs = 3000;
+  const deadline = Date.now() + timeoutMs;
+  while(Date.now() < deadline) {
+    try {
+      const order = await api('/orders/track/' + orderId);
+      if(order.payment_status === 'paid' || ['confirmed','preparing','ready','out_for_delivery','delivered'].includes(order.status)) {
+        toast(`Payment confirmed for order #${orderId}!`, 'success');
+        document.getElementById('track-id-input').value = orderId;
+        showPage('track');
+        trackOrder();
+        return;
+      }
+      if(order.payment_status && order.payment_status !== 'pending') {
+        toast(`Order #${orderId} status: ${order.payment_status}.`, 'info');
+      }
+    } catch(e) {
+      console.log('Order poll failed', e.message || e);
+    }
+    await new Promise(resolve => setTimeout(resolve, intervalMs));
+  }
+  toast(`Still waiting for final payment confirmation for order #${orderId}. Check again in a few minutes.`, 'info');
+}
+
 async function api(path, method='GET', body=null) {
   const opts = { method, headers: {'Content-Type':'application/json'} };
   if(token) opts.headers['Authorization'] = 'Bearer ' + token;
   if(body) opts.body = JSON.stringify(body);
+  const urls = [API + path];
+  if(API !== API_LOCAL) urls.push(API_LOCAL + path);
+  let lastError = null;
+  for (const url of urls) {
+    try {
+      try {
+        console.log('API REQUEST:', method, url, body ? JSON.parse(opts.body) : null);
+      } catch (e) {
+        console.log('API REQUEST:', method, url, opts.body);
+      }
+      const r = await fetch(url, opts);
+      let data = null;
+      try {
+        data = await r.clone().json();
+      } catch (e) {
+        try { data = await r.clone().text(); } catch (e2) { data = null; }
+      }
+      console.log('API RESPONSE:', { url, status: r.status, ok: r.ok, data });
+      if(!r.ok) {
+        const msg = data && data.detail ? data.detail : (typeof data === 'string' ? data : 'Error');
+        throw new Error(msg);
+      }
+      return data;
+    } catch (err) {
+      console.log('API ERROR:', url, err && err.message ? err.message : err);
+      lastError = err;
+      continue;
+    }
+  }
+  throw lastError || new Error('API request failed');
+}
+
+function updateHeroHighlights() {
+  const label = document.getElementById('hero-highlight-label');
+  const title = document.getElementById('hero-highlight-title');
+  const desc = document.getElementById('hero-highlight-desc');
+  const dots = document.getElementById('hero-highlight-dots');
+  const heroBg = document.getElementById('hero-bg');
+  if(!label || !title || !desc || !heroBg) return;
+  if(!heroHighlights.length) {
+    label.textContent = 'What’s New';
+    title.textContent = 'Fresh specials and fun events coming soon';
+    desc.textContent = 'Check out the latest updates from West Texas Sports Grill.';
+    if(dots) dots.innerHTML = '';
+    if(typeof IMG1 !== 'undefined') {
+      heroBg.style.backgroundImage = `linear-gradient(105deg, rgba(26,18,8,.94) 0%, rgba(26,18,8,.73) 55%, rgba(26,18,8,.42) 100%), url(${IMG1})`;
+    }
+    return;
+  }
+  const item = heroHighlights[heroHighlightIndex];
+  const categoryText = (item.category || 'What’s New').toString().replace(/_/g, ' ');
+  label.textContent = categoryText.toUpperCase();
+  title.textContent = item.title || 'Fresh updates';
+  desc.textContent = item.description || 'See the latest news and events from West Texas Sports Grill.';
+  if(dots) {
+    dots.innerHTML = heroHighlights.map((_, idx) => `<span class="hero-highlight-dot ${idx === heroHighlightIndex ? 'active' : ''}"></span>`).join('');
+  }
+  const imageUrl = item.image ? resolveImageUrl(item.image) : (typeof IMG1 !== 'undefined' ? IMG1 : null);
+  if(imageUrl) {
+    heroBg.style.backgroundImage = `linear-gradient(105deg, rgba(26,18,8,.94) 0%, rgba(26,18,8,.73) 55%, rgba(26,18,8,.42) 100%), url(${imageUrl})`;
+  } else if(typeof IMG1 !== 'undefined') {
+    heroBg.style.backgroundImage = `linear-gradient(105deg, rgba(26,18,8,.94) 0%, rgba(26,18,8,.73) 55%, rgba(26,18,8,.42) 100%), url(${IMG1})`;
+  }
+}
+
+async function loadHeroHighlights() {
   try {
-    try {
-      console.log('API REQUEST:', method, API + path, body ? JSON.parse(opts.body) : null);
-    } catch (e) {
-      console.log('API REQUEST:', method, API + path, opts.body);
-    }
-    const r = await fetch(API + path, opts);
-    let data = null;
-    try {
-      data = await r.clone().json();
-    } catch (e) {
-      try { data = await r.clone().text(); } catch (e2) { data = null; }
-    }
-    console.log('API RESPONSE:', { url: API + path, status: r.status, ok: r.ok, data });
-    if(!r.ok) {
-      const msg = data && data.detail ? data.detail : (typeof data === 'string' ? data : 'Error');
-      throw new Error(msg);
-    }
-    return data;
-  } catch (err) {
-    console.log('API ERROR:', err && err.message ? err.message : err);
-    throw err;
+    const news = await api('/news');
+    const featured = (news || []).filter(item => item.highlight || item.category === 'event' || item.category === 'menu' || item.category === 'special').slice(0, 4);
+    heroHighlights = featured.length ? featured : [{ title: 'Fresh specials every week', description: 'Watch for new menu drops, events, and local favorites.', category: 'What’s New' }];
+    heroHighlightIndex = 0;
+    updateHeroHighlights();
+    if(heroHighlightTimer) clearInterval(heroHighlightTimer);
+    heroHighlightTimer = setInterval(() => {
+      heroHighlightIndex = (heroHighlightIndex + 1) % heroHighlights.length;
+      updateHeroHighlights();
+    }, 6000);
+  } catch (e) {
+    console.log('Hero highlights unavailable', e.message || e);
+    updateHeroHighlights();
   }
 }
 
@@ -807,10 +1299,7 @@ async function doLogin() {
   const pass=document.getElementById('login-pass').value;
   if(!email||!pass) return toast('Fill in all fields','error');
   try {
-    const fd=new FormData(); fd.append('username',email); fd.append('password',pass);
-    const r=await fetch(API+'/auth/login',{method:'POST',body:fd});
-    const data=await r.json();
-    if(!r.ok) throw new Error(data.detail);
+    const data = await api('/auth/login','POST',{username:email,password:pass});
     token=data.access_token; currentUser=data.user;
     localStorage.setItem('wtsg_token',token);
     localStorage.setItem('wtsg_user',JSON.stringify(currentUser));
@@ -841,38 +1330,49 @@ function doLogout() {
 
 // ── Menu ────────────────────────────────────────────────────────────────
 async function loadMenuPage() {
-  if(allMenuItems.length) { renderMenuItems(allMenuItems); return; }
+  if(allMenuItems.length) { renderWeeklySpecials(allMenuItems); renderMenuItems(allMenuItems); return; }
   document.getElementById('menu-items-grid').innerHTML='<div class="loading">Loading menu…</div>';
   try {
     const [items, cats] = await Promise.all([api('/menu/items'), api('/menu/categories')]);
-    allMenuItems=items; allCategories=cats;
+    allMenuItems=items;
+    allCategories=cats.map(c=>({ ...c, slug: c.slug || slugify(c.name) }));
+    currentMenuFilter='all';
     const cf=document.getElementById('cat-filters');
     cf.querySelectorAll('.cat-btn:not(:first-child)').forEach(b=>b.remove());
-    cats.forEach(c => {
+    allCategories.forEach(c => {
       const btn=document.createElement('button');
       btn.className='cat-btn';
       btn.textContent=c.icon+' '+c.name;
       btn.onclick=()=>filterMenu(c.slug,btn);
       cf.appendChild(btn);
     });
+    renderWeeklySpecials(items);
     renderMenuItems(items);
-  } catch(e) { document.getElementById('menu-items-grid').innerHTML='<p class="no-data">Could not load menu. Make sure the backend is running at localhost:8000</p>'; }
+  } catch(e) { document.getElementById('menu-items-grid').innerHTML='<p class="no-data">Could not load menu. Make sure the backend is running at http://localhost:3000</p>'; }
 }
 
 function getCatName(id) {
   const c=allCategories.find(c=>c.id===id);
   return c ? c.icon+' '+c.name : '';
 }
+function slugify(text) {
+  return text ? text.toString().toLowerCase().trim().replace(/\s+/g,'_').replace(/[^\w\-]+/g,'') : '';
+}
 
 function menuCardHTML(item) {
   const name = item.name.replace(/'/g,"\\'");
-  return `<div class="menu-card">
+  const imageUrl = item.image ? resolveImageUrl(item.image) : '';
+  return `<div class="menu-card"> 
+    <div class="menu-card-image">
+      ${imageUrl ? `<img src="${imageUrl}" alt="${name}">` : `<div class="placeholder">Add an image<br>for this dish</div>`}
+    </div>
     <div class="mc-top">
       <span class="mc-cat">${getCatName(item.category_id)}</span>
       <div class="mc-badges">
         ${item.is_spicy?'<span class="mc-badge spicy">🌶 Spicy</span>':''}
         ${item.is_popular?'<span class="mc-badge popular">⭐ Popular</span>':''}
         ${item.is_featured?'<span class="mc-badge featured">🔥 Featured</span>':''}
+        ${item.weekly_special?'<span class="mc-badge special">✨ Weekly Special</span>':''}
       </div>
     </div>
     <div class="mc-name">${item.name}</div>
@@ -890,10 +1390,22 @@ function menuCardHTML(item) {
 function renderMenuItems(items) {
   const grid=document.getElementById('menu-items-grid');
   if(!items.length) { grid.innerHTML='<p class="no-data">No items found.</p>'; return; }
-  grid.innerHTML=items.map(i=>menuCardHTML(i)).join('');
+  grid.innerHTML = items.map(menuCardHTML).join('');
+}
+
+function renderWeeklySpecials(items) {
+  const grid = document.getElementById('weekly-specials-grid');
+  if(!grid) return;
+  const specials = items.filter(i => i.weekly_special === true);
+  if(!specials.length) {
+    grid.innerHTML = '<p class="no-data">No weekly specials yet. Add them from the admin menu with a weekly special setting.</p>';
+    return;
+  }
+  grid.innerHTML = specials.map(menuCardHTML).join('');
 }
 
 function filterMenu(slug, el) {
+  currentMenuFilter = slug;
   document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   document.getElementById('menu-search').value='';
@@ -915,7 +1427,7 @@ function searchMenu(q) {
 async function loadFeaturedItems() {
   try {
     const [items,cats]=await Promise.all([api('/menu/items?featured=true'),api('/menu/categories')]);
-    if(!allCategories.length) allCategories=cats;
+    if(!allCategories.length) allCategories=cats.map(c=>({ ...c, slug: c.slug || slugify(c.name) }));
     const grid=document.getElementById('featured-items');
     if(!items.length) { grid.innerHTML='<p class="no-data">No featured items.</p>'; return; }
     grid.innerHTML=items.slice(0,6).map(i=>menuCardHTML(i)).join('');
@@ -964,6 +1476,15 @@ function setOrderType(type,el) {
   orderType=type;
   document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active'); updateCartUI();
+  if(orderType==='delivery' && paymentMethod==='pickup') {
+    paymentMethod = 'stripe';
+  }
+  if(document.getElementById('page-checkout').classList.contains('active')) {
+    updateCheckoutPaymentNote();
+    document.getElementById('payment-confirmation').style.display='none';
+    paymentConfirmed = false;
+    initCheckoutPaymentOptions();
+  }
 }
 function toggleCart() {
   document.getElementById('cart-sidebar').classList.toggle('open');
@@ -990,6 +1511,61 @@ function goCheckout() {
   }
   showPage('checkout');
 }
+
+// ── Order Sound ───────────────────────────────────────────────────────────
+function playOrderSound() {
+  try {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const now = audioContext.currentTime;
+    
+    // Create a pleasant notification sound (beep-beep pattern)
+    const osc1 = audioContext.createOscillator();
+    const osc2 = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    const gain2 = audioContext.createGain();
+    
+    osc1.connect(gain);
+    osc2.connect(gain2);
+    gain.connect(audioContext.destination);
+    gain2.connect(audioContext.destination);
+    
+    // First beep: 600Hz
+    osc1.frequency.value = 600;
+    gain.gain.setValueAtTime(0.3, now);
+    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+    osc1.start(now);
+    osc1.stop(now + 0.15);
+    
+    // Second beep: 800Hz (slightly after first)
+    osc2.frequency.value = 800;
+    gain2.gain.setValueAtTime(0.3, now + 0.2);
+    gain2.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
+    osc2.start(now + 0.2);
+    osc2.stop(now + 0.35);
+  } catch(e) {
+    console.log('Audio context not available');
+  }
+}
+
+function buildOrderPayload() {
+  const name=document.getElementById('co-name').value;
+  const phone=document.getElementById('co-phone').value;
+  const email=document.getElementById('co-email').value;
+  const notes=document.getElementById('co-notes').value;
+  const address=document.getElementById('co-address').value;
+  return {
+    order_type:orderType,
+    items:cart.map(i=>({menu_item_id:i.id,quantity:i.qty})),
+    special_instructions:notes||null,
+    delivery_address:address||null,
+    guest_name:currentUser?null:name,
+    guest_email:currentUser?null:email,
+    guest_phone:currentUser?null:phone,
+    payment_method: paymentMethod,
+    payment_provider: ['stripe','paypal'].includes(paymentMethod) ? paymentMethod : null
+  };
+}
+
 async function submitOrder() {
   const name=document.getElementById('co-name').value;
   const phone=document.getElementById('co-phone').value;
@@ -998,24 +1574,69 @@ async function submitOrder() {
   const address=document.getElementById('co-address').value;
   if(!name||!phone) return toast('Name and phone required','error');
   if(orderType==='delivery'&&!address) return toast('Delivery address required','error');
-  const payload={
-    order_type:orderType,
-    items:cart.map(i=>({menu_item_id:i.id,quantity:i.qty})),
-    special_instructions:notes||null,
-    delivery_address:address||null,
-    guest_name:currentUser?null:name,
-    guest_email:currentUser?null:email,
-    guest_phone:currentUser?null:phone,
-  };
+  if(orderType==='delivery' && paymentMethod === 'pickup') {
+    return toast('Delivery orders must be prepaid with Stripe or PayPal.','error');
+  }
+  if(['stripe','paypal'].includes(paymentMethod) && !paymentConfirmed) {
+    document.getElementById('payment-confirmation').style.display = 'block';
+    toast('Please complete hosted checkout before placing this order.','info');
+    return;
+  }
+  const payload=buildOrderPayload();
   try {
     const order=await api('/orders/','POST',payload);
     lastOrderId=order.id; cart=[]; saveCart(); updateCartUI();
     document.getElementById('order-confirm-id').textContent='Order #'+order.id;
     document.getElementById('checkout-form-wrap').style.display='none';
     document.getElementById('checkout-success').style.display='block';
+    paymentConfirmed = false;
+    document.getElementById('payment-confirmation').style.display = 'none';
     toast('Order placed! 🤠');
+    playOrderSound();
   } catch(e) { toast(e.message,'error'); }
 }
+function setPaymentMethod(method) {
+  paymentMethod = method;
+  paymentConfirmed = false;
+  document.getElementById('payment-confirmation').style.display = 'none';
+}
+
+function confirmPayment() {
+  const payload = buildOrderPayload();
+  if(paymentMethod === 'paypal'){
+    api('/payments/paypal/create-order','POST',{ order: payload })
+      .then(data=>{
+        if(data.approveUrl) window.location.href = data.approveUrl;
+        else toast('Unable to start PayPal checkout','error');
+      }).catch(e=>toast(e.message,'error'));
+    return;
+  }
+  if(paymentMethod === 'stripe'){
+    api('/payments/stripe/create-checkout-session','POST',{ order: payload })
+      .then(data=>{
+        if(data.url) window.location.href = data.url;
+        else toast('Unable to start Stripe checkout','error');
+      }).catch(e=>toast(e.message,'error'));
+    return;
+  }
+  if(paymentMethod === 'pickup'){
+    paymentConfirmed = true;
+    submitOrder();g
+    return;
+  }
+  toast('Select a payment option before continuing.','error');
+}
+
+function updateCheckoutPaymentNote() {
+  const note = document.getElementById('checkout-payment-note');
+  if(!note) return;
+  if(orderType==='delivery') {
+    note.textContent = 'Delivery must be prepaid with Stripe or PayPal before placing the order.';
+  } else {
+    note.textContent = 'Pickup and dine-in orders can be paid at pickup, or use Stripe/PayPal now.';
+  }
+}
+
 function goTrackOrder() {
   document.getElementById('track-id-input').value=lastOrderId||'';
   showPage('track');
@@ -1045,11 +1666,12 @@ async function trackOrder() {
     const order=await api('/orders/track/'+id);
     const steps=order.order_type==='delivery'?STATUS_STEPS:PICKUP_STEPS;
     const curIdx=steps.findIndex(s=>s.key===order.status);
+    const orderTotal = typeof order.total === 'number' ? order.total : 0;
     document.getElementById('track-result').innerHTML=`
       <div class="tracking-box">
         <div class="tracking-hdr">
           <div class="tracking-id">Order #${order.id}</div>
-          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.45);margin-top:.2rem">${order.order_type.replace('_',' ')} · $${order.total.toFixed(2)}</div>
+          <div style="font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.45);margin-top:.2rem">${order.order_type.replace('_',' ')} · $${orderTotal.toFixed(2)}</div>
         </div>
         <div class="tracking-body">
           ${order.estimated_time&&order.status!=='delivered'?`<div class="eta-badge">⏱ Estimated: ${order.estimated_time} min</div>`:''}
@@ -1160,6 +1782,217 @@ async function submitReview() {
   } catch(e) { toast(e.message,'error'); }
 }
 
+// ── News ────────────────────────────────────────────────────────────────────
+async function loadNews() {
+  document.getElementById('news-grid').innerHTML='<div class="loading">Loading news…</div>';
+  try {
+    const news = await api('/news');
+    renderNews(news);
+  } catch(e) { document.getElementById('news-grid').innerHTML='<p class="no-data">Could not load news. Is backend running?</p>'; }
+}
+
+function renderNews(news) {
+  const grid = document.getElementById('news-grid');
+  if(!news.length) {
+    grid.innerHTML = `<div class="news-empty"><div class="news-empty-icon">📰</div><div class="news-empty-text">No news yet</div><div class="news-empty-desc">Check back soon for exciting updates!</div></div>`;
+    return;
+  }
+  grid.innerHTML = news.map((item, idx) => `
+    <div class="news-card" style="animation-delay:${idx * 0.08}s">
+      ${item.highlight ? '<div class="news-highlight">🔥 Featured</div>' : ''}
+      ${item.image ? `<img class="news-image" src="${resolveImageUrl(item.image)}" alt="${item.title}">` : `<div class="news-placeholder">📸<br>No image</div>`}
+      <div class="news-card-content">
+        <div class="news-category">${item.category}</div>
+        <h3 class="news-title">${item.title}</h3>
+        <p class="news-desc">${item.description}</p>
+        <div class="news-date">📅 ${new Date(item.date).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function loadAdminNews() {
+  document.getElementById('admin-content').innerHTML='<div class="loading">Loading…</div>';
+  try {
+    const news = await api('/news');
+    const html = `
+      <div class="admin-hdr">
+        <div class="admin-title">News & Events (${news.length})</div>
+        <button class="btn-primary" onclick="openNewsForm()">+ Add News</button>
+      </div>
+      ${!news.length ? '<p class="no-data">No news yet. Add your first announcement!</p>' : `
+      <div style="display:grid;gap:1rem;margin-bottom:2rem">
+        ${news.map((item, idx) => `
+          <div style="background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.2rem;display:flex;gap:1.2rem;align-items:flex-start">
+            <div style="flex-shrink:0">
+              ${item.image ? `<img src="${resolveImageUrl(item.image)}" style="width:100px;height:80px;object-fit:cover;border-radius:4px;border:1px solid rgba(255,255,255,.08)">` : `<div style="width:100px;height:80px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:4px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.1)">No image</div>`}
+            </div>
+            <div style="flex:1">
+              <div style="display:flex;gap:.5rem;align-items:center;margin-bottom:.4rem">
+                <span style="background:rgba(230,126,34,.2);color:var(--amber);padding:.2rem .6rem;border-radius:3px;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;font-weight:600">${item.category}</span>
+                ${item.highlight ? '<span style="background:rgba(192,57,43,.2);color:var(--rust);padding:.2rem .6rem;border-radius:3px;font-size:.65rem;letter-spacing:1px;text-transform:uppercase;font-weight:600">Featured</span>' : ''}
+              </div>
+              <div style="font-family:'Bebas Neue',sans-serif;font-size:1.1rem;margin-bottom:.3rem">${item.title}</div>
+              <p style="font-size:.85rem;color:rgba(245,236,215,.6);margin-bottom:.5rem;line-height:1.5">${item.description}</p>
+              <div style="font-size:.75rem;color:rgba(245,236,215,.45);margin-bottom:.8rem">📅 ${new Date(item.date).toLocaleDateString()}</div>
+              <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+                <button class="abtn" onclick="editNews(${item.id})">✎ Edit</button>
+                <button class="abtn danger" onclick="deleteNews(${item.id})">🗑 Delete</button>
+              </div>
+            </div>
+          </div>
+        `).join('')}
+      </div>`}
+      <div id="news-form" style="display:none;background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.5rem;margin-top:1.5rem">
+        <h3 style="font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;margin-bottom:1rem">Add/Edit News</h3>
+        <div style="display:grid;gap:.8rem">
+          <div>
+            <label style="font-size:.8rem;color:rgba(245,236,215,.6);display:block;margin-bottom:.3rem">Title *</label>
+            <input type="text" id="news-title" placeholder="News headline" style="width:100%;padding:.6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;color:var(--cream)">
+          </div>
+          <div>
+            <label style="font-size:.8rem;color:rgba(245,236,215,.6);display:block;margin-bottom:.3rem">Description *</label>
+            <textarea id="news-desc" placeholder="News details" style="width:100%;padding:.6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;color:var(--cream);min-height:80px;resize:vertical;font-family:'Barlow',sans-serif"></textarea>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:.8rem">
+            <div>
+              <label style="font-size:.8rem;color:rgba(245,236,215,.6);display:block;margin-bottom:.3rem">Category</label>
+              <select id="news-cat" style="width:100%;padding:.6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;color:var(--cream)">
+                <option value="event">Event</option>
+                <option value="menu">Menu Update</option>
+                <option value="promotion">Promotion</option>
+                <option value="announcement">Announcement</option>
+              </select>
+            </div>
+            <div>
+              <label style="font-size:.8rem;color:rgba(245,236,215,.6);display:block;margin-bottom:.3rem">Date</label>
+              <input type="date" id="news-date" style="width:100%;padding:.6rem;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;color:var(--cream)">
+            </div>
+          </div>
+          <div>
+            <label style="font-size:.8rem;color:rgba(245,236,215,.6);display:block;margin-bottom:.3rem">Image</label>
+            <div id="news-img-preview" style="width:100%;height:100px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:3px;display:flex;align-items:center;justify-content:center;margin-bottom:.6rem;color:rgba(245,236,215,.3);overflow:hidden">
+              <img id="news-img-prev" style="display:none;width:100%;height:100%;object-fit:cover">
+              <span id="news-img-text">No image selected</span>
+            </div>
+            <label style="display:block;background:var(--rust);color:#fff;padding:.6rem 1rem;border-radius:3px;font-family:'Barlow Condensed',sans-serif;font-size:.8rem;letter-spacing:1px;cursor:pointer;text-align:center;margin-bottom:.6rem">
+              📤 Upload Image
+              <input type="file" id="news-img" accept="image/*" style="display:none" onchange="previewNewsImage()">
+            </label>
+          </div>
+          <label style="display:flex;align-items:center;gap:.6rem;cursor:pointer">
+            <input type="checkbox" id="news-highlight">
+            <span style="font-size:.85rem;color:rgba(245,236,215,.6)">Mark as Featured/Highlight</span>
+          </label>
+          <div style="display:flex;gap:.6rem">
+            <button class="btn-primary" style="flex:1" onclick="saveNews()">Save News</button>
+            <button class="btn-secondary" style="flex:1" onclick="closeNewsForm()">Cancel</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.getElementById('admin-content').innerHTML = html;
+  } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Failed to load news. Is backend running?</p>'; }
+}
+
+let editingNewsId = null;
+
+function openNewsForm() {
+  editingNewsId = null;
+  document.getElementById('news-title').value = '';
+  document.getElementById('news-desc').value = '';
+  document.getElementById('news-cat').value = 'event';
+  document.getElementById('news-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('news-highlight').checked = false;
+  document.getElementById('news-img').value = '';
+  document.getElementById('news-img-prev').style.display = 'none';
+  document.getElementById('news-img-text').textContent = 'No image selected';
+  document.getElementById('news-form').style.display = 'block';
+  window.scrollTo(0, document.getElementById('news-form').offsetTop - 100);
+}
+
+function closeNewsForm() {
+  document.getElementById('news-form').style.display = 'none';
+  editingNewsId = null;
+}
+
+function previewNewsImage() {
+  const input = document.getElementById('news-img');
+  const preview = document.getElementById('news-img-prev');
+  const text = document.getElementById('news-img-text');
+  if(input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      preview.src = e.target.result;
+      preview.style.display = 'block';
+      text.style.display = 'none';
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+async function editNews(id) {
+  try {
+    const news = await api('/news/' + id);
+    editingNewsId = id;
+    document.getElementById('news-title').value = news.title;
+    document.getElementById('news-desc').value = news.description;
+    document.getElementById('news-cat').value = news.category;
+    document.getElementById('news-date').value = news.date;
+    document.getElementById('news-highlight').checked = news.highlight || false;
+    if(news.image) {
+      const img = document.getElementById('news-img-prev');
+      img.src = resolveImageUrl(news.image);
+      img.style.display = 'block';
+      document.getElementById('news-img-text').style.display = 'none';
+    }
+    document.getElementById('news-img').value = '';
+    document.getElementById('news-form').style.display = 'block';
+    window.scrollTo(0, document.getElementById('news-form').offsetTop - 100);
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function saveNews() {
+  const title = document.getElementById('news-title').value;
+  const desc = document.getElementById('news-desc').value;
+  if(!title || !desc) return toast('Title and description required', 'error');
+  
+  const fd = new FormData();
+  fd.append('title', title);
+  fd.append('description', desc);
+  fd.append('category', document.getElementById('news-cat').value);
+  fd.append('date', document.getElementById('news-date').value);
+  fd.append('highlight', document.getElementById('news-highlight').checked);
+  
+  const fileInput = document.getElementById('news-img');
+  if(fileInput.files && fileInput.files[0]) fd.append('image', fileInput.files[0]);
+  
+  try {
+    toast('Saving…', 'info');
+    const method = editingNewsId ? 'PUT' : 'POST';
+    const path = editingNewsId ? '/news/' + editingNewsId : '/news';
+    const response = await fetch(API + path, {
+      method,
+      headers: token ? {'Authorization': 'Bearer ' + token} : {},
+      body: fd
+    });
+    const data = await response.json();
+    if(!response.ok) throw new Error(data.detail || 'Save failed');
+    toast('News saved!', 'success');
+    closeNewsForm();
+    loadAdminNews();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
+async function deleteNews(id) {
+  if(!confirm('Delete this news item?')) return;
+  try {
+    await api('/news/' + id, 'DELETE');
+    toast('News deleted', 'success');
+    loadAdminNews();
+  } catch(e) { toast(e.message, 'error'); }
+}
+
 // ── ADMIN ──────────────────────────────────────────────────────────────────
 async function adminTab(tab,el) {
   document.querySelectorAll('.anav').forEach(i=>i.classList.remove('active'));
@@ -1170,16 +2003,26 @@ async function adminTab(tab,el) {
     document.getElementById('admin-content').innerHTML = '<p class="no-data">Backend unavailable. Admin features require a reachable backend API.</p>';
     return;
   }
-  const map = {dashboard:loadAdminDashboard,orders:loadAdminOrders,reservations:loadAdminReservations,menu:loadAdminMenu,categories:loadAdminCategories,reviews:loadAdminReviews,settings:loadSiteSettings};
+  const map = {dashboard:loadAdminDashboard,orders:loadAdminOrders,reservations:loadAdminReservations,menu:loadAdminMenu,categories:loadAdminCategories,reviews:loadAdminReviews,news:loadAdminNews,settings:loadSiteSettings};
   map[tab]?.();
 }
 
-async function loadAdminDashboard() {
+async function loadAdminDashboard(startDateStr, endDateStr) {
   document.getElementById('admin-content').innerHTML='<div class="loading">Loading…</div>';
   try {
-    const d=await api('/admin/dashboard');
+    const qs = [];
+    if(startDateStr) qs.push('start_date=' + encodeURIComponent(startDateStr));
+    if(endDateStr) qs.push('end_date=' + encodeURIComponent(endDateStr));
+    const d = await api('/admin/dashboard' + (qs.length ? ('?' + qs.join('&')) : ''));
     document.getElementById('admin-content').innerHTML=`
       <div class="admin-hdr"><div class="admin-title">Dashboard</div></div>
+      <div style="display:flex;gap:.5rem;align-items:center;margin:1rem 0">
+        <label style="font-size:.85rem;color:rgba(245,236,215,.6)">From</label>
+        <input type="date" id="dash-start" value="${startDateStr||''}" style="padding:.4rem;border-radius:3px;border:1px solid rgba(255,255,255,.06)">
+        <label style="font-size:.85rem;color:rgba(245,236,215,.6)">To</label>
+        <input type="date" id="dash-end" value="${endDateStr||''}" style="padding:.4rem;border-radius:3px;border:1px solid rgba(255,255,255,.06)">
+        <button class="btn-primary" style="margin-left:.6rem" onclick="filterDashboard()">Filter</button>
+      </div>
       <div class="stats-grid">
         <div class="stat-card amber"><div class="scv amber">${d.today_orders}</div><div class="scl">Today's Orders</div></div>
         <div class="stat-card green"><div class="scv green">$${d.today_revenue.toFixed(2)}</div><div class="scl">Today's Revenue</div></div>
@@ -1196,10 +2039,17 @@ async function loadAdminDashboard() {
   } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Backend unavailable. Admin features require a reachable backend API.</p>'; }
 }
 
+function filterDashboard(){
+  const s = document.getElementById('dash-start').value || '';
+  const e = document.getElementById('dash-end').value || '';
+  loadAdminDashboard(s,e);
+}
+
 async function loadAdminOrders() {
   document.getElementById('admin-content').innerHTML='<div class="loading">Loading…</div>';
   try {
     const orders=await api('/orders/');
+    orders.sort((a,b)=>b.id-a.id);
     document.getElementById('admin-content').innerHTML=`
       <div class="admin-hdr"><div class="admin-title">Orders (${orders.length})</div></div>
       ${!orders.length?'<p class="no-data">No orders yet.</p>':`
@@ -1271,7 +2121,7 @@ async function loadAdminMenu() {
       <div class="menu-admin-grid">
         <div style="overflow-x:auto">
           <table class="atable">
-            <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Featured</th><th>Popular</th><th>Available</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Name</th><th>Category</th><th>Price</th><th>Featured</th><th>Popular</th><th>Weekly</th><th>Available</th><th>Actions</th></tr></thead>
             <tbody>
               ${items.map(i=>`<tr>
                 <td><strong>${i.name}</strong><br><small style="color:rgba(245,236,215,.35)">${(i.description||'').substring(0,50)}${(i.description||'').length>50?'…':''}</small></td>
@@ -1279,6 +2129,7 @@ async function loadAdminMenu() {
                 <td style="color:var(--gold);font-weight:700">$${i.price.toFixed(2)}</td>
                 <td><span class="pill ${i.is_featured?'p-yes':'p-no'}">${i.is_featured?'Yes':'No'}</span></td>
                 <td><span class="pill ${i.is_popular?'p-yes':'p-no'}">${i.is_popular?'Yes':'No'}</span></td>
+                <td><span class="pill ${i.weekly_special?'p-yes':'p-no'}">${i.weekly_special?'Yes':'No'}</span></td>
                 <td><span class="pill ${i.is_available?'p-yes':'p-no'}">${i.is_available?'Yes':'No'}</span></td>
                 <td>
                   <button class="abtn" onclick='editItem(${JSON.stringify(i).replace(/'/g,"&#39;")})'>✏ Edit</button>
@@ -1298,10 +2149,19 @@ async function loadAdminMenu() {
             <div class="fg"><label for="if-cal">Calories</label><input type="number" id="if-cal" placeholder="500"></div>
           </div>
           <div class="fg"><label for="if-allergens">Allergens</label><input type="text" id="if-allergens" placeholder="nuts, dairy, gluten…"></div>
+          <div class="fg">
+            <label for="if-image">Menu Image</label>
+            <input type="file" id="if-image" accept="image/*">
+            <div id="item-image-preview" style="margin-top:.6rem;display:none;border:1px solid rgba(255,255,255,.08);border-radius:2px;padding:.5rem;background:rgba(26,18,8,.35)">
+              <div style="font-size:.72rem;color:rgba(245,236,215,.45);margin-bottom:.4rem">Current image</div>
+              <img id="item-image-preview-img" src="" style="width:100%;max-height:140px;object-fit:contain;border-radius:2px;display:block">
+            </div>
+          </div>
           <div style="margin:.6rem 0">
             <label class="cb-row"><input type="checkbox" id="if-featured"> 🔥 Featured on homepage</label>
             <label class="cb-row"><input type="checkbox" id="if-popular"> ⭐ Mark as popular</label>
             <label class="cb-row"><input type="checkbox" id="if-spicy"> 🌶 Spicy item</label>
+            <label class="cb-row"><input type="checkbox" id="if-weekly-special"> ✨ Weekly special</label>
             <label class="cb-row"><input type="checkbox" id="if-available" checked> ✓ Currently available</label>
           </div>
           <div class="form-actions">
@@ -1317,8 +2177,10 @@ function openItemForm() {
   editingItemId=null;
   document.getElementById('item-form-title').textContent='Add New Item';
   ['if-name','if-desc','if-price','if-cal','if-allergens'].forEach(id=>document.getElementById(id).value='');
-  ['if-featured','if-popular','if-spicy'].forEach(id=>document.getElementById(id).checked=false);
+  document.getElementById('if-image').value='';
+  ['if-featured','if-popular','if-spicy','if-weekly-special'].forEach(id=>document.getElementById(id).checked=false);
   document.getElementById('if-available').checked=true;
+  document.getElementById('item-image-preview').style.display='none';
   document.getElementById('item-form-box').style.display='block';
   document.getElementById('item-form-box').scrollIntoView({behavior:'smooth'});
 }
@@ -1334,7 +2196,17 @@ function editItem(item) {
   document.getElementById('if-featured').checked=item.is_featured;
   document.getElementById('if-popular').checked=item.is_popular;
   document.getElementById('if-spicy').checked=item.is_spicy;
+  document.getElementById('if-weekly-special').checked=Boolean(item.weekly_special);
   document.getElementById('if-available').checked=item.is_available;
+  document.getElementById('if-image').value='';
+  if(item.image) {
+    const preview = document.getElementById('item-image-preview');
+    const img = document.getElementById('item-image-preview-img');
+    img.src = resolveImageUrl(item.image);
+    preview.style.display='block';
+  } else {
+    document.getElementById('item-image-preview').style.display='none';
+  }
   document.getElementById('item-form-box').style.display='block';
   document.getElementById('item-form-box').scrollIntoView({behavior:'smooth'});
 }
@@ -1345,19 +2217,28 @@ async function saveItem() {
   const price=parseFloat(document.getElementById('if-price').value);
   if(!name) return toast('Name is required','error');
   if(!price||price<=0) return toast('Valid price required','error');
-  const payload={
-    name, category_id, price,
-    description:document.getElementById('if-desc').value||null,
-    calories:parseInt(document.getElementById('if-cal').value)||null,
-    allergens:document.getElementById('if-allergens').value||null,
-    is_featured:document.getElementById('if-featured').checked,
-    is_popular:document.getElementById('if-popular').checked,
-    is_spicy:document.getElementById('if-spicy').checked,
-    is_available:document.getElementById('if-available').checked,
-  };
+  const fd = new FormData();
+  fd.append('name', name);
+  fd.append('category_id', category_id);
+  fd.append('price', price);
+  fd.append('description', document.getElementById('if-desc').value || '');
+  fd.append('calories', document.getElementById('if-cal').value || '');
+  fd.append('allergens', document.getElementById('if-allergens').value || '');
+  fd.append('is_featured', document.getElementById('if-featured').checked);
+  fd.append('is_popular', document.getElementById('if-popular').checked);
+  fd.append('is_spicy', document.getElementById('if-spicy').checked);
+  fd.append('weekly_special', document.getElementById('if-weekly-special').checked);
+  fd.append('is_available', document.getElementById('if-available').checked);
+  const imageFile = document.getElementById('if-image').files[0];
+  if(imageFile) fd.append('image', imageFile);
   try {
-    if(editingItemId) { await api(`/menu/items/${editingItemId}`,'PUT',payload); toast('Item updated ✓'); }
-    else { await api('/menu/items','POST',payload); toast('Item added ✓'); }
+    const headers = token ? {'Authorization':'Bearer '+token} : {};
+    const url = editingItemId ? `/menu/items/${editingItemId}` : '/menu/items';
+    const method = editingItemId ? 'PUT' : 'POST';
+    const r = await fetch(API + url, { method, headers, body: fd });
+    const data = await r.json().catch(()=>null);
+    if(!r.ok) throw new Error(data && data.detail ? data.detail : 'Failed to save item');
+    toast(editingItemId ? 'Item updated ✓' : 'Item added ✓');
     allMenuItems=[]; closeItemForm(); loadAdminMenu();
   } catch(e) { toast(e.message,'error'); }
 }
@@ -1371,21 +2252,96 @@ async function loadAdminCategories() {
   document.getElementById('admin-content').innerHTML='<div class="loading">Loading…</div>';
   try {
     const cats=await api('/menu/categories');
+    allCategories = cats;
     document.getElementById('admin-content').innerHTML=`
-      <div class="admin-hdr"><div class="admin-title">Categories</div></div>
-      <div style="max-width:600px">
-        <table class="atable">
-          <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Sort Order</th></tr></thead>
-          <tbody>${cats.map(c=>`<tr>
-            <td style="font-size:1.5rem">${c.icon}</td>
-            <td><strong>${c.name}</strong></td>
-            <td style="font-family:'Barlow Condensed';color:rgba(245,236,215,.4)">${c.slug}</td>
-            <td>${c.sort_order}</td>
-          </tr>`).join('')}</tbody>
-        </table>
-        <p style="margin-top:1rem;font-size:.82rem;color:rgba(245,236,215,.3);line-height:1.6">Categories are managed via <code style="background:rgba(255,255,255,.08);padding:.1rem .4rem;border-radius:2px">seed.py</code>. Add new categories there and re-run it. Menu items can then be assigned to them above.</p>
+      <div class="admin-hdr">
+        <div class="admin-title">Categories</div>
+        <button class="btn-primary" onclick="openCategoryForm()">+ Add Category</button>
+      </div>
+      <div class="menu-admin-grid" style="grid-template-columns:minmax(0,1fr) 360px;align-items:start">
+        <div style="overflow-x:auto">
+          <table class="atable">
+            <thead><tr><th>Icon</th><th>Name</th><th>Slug</th><th>Sort Order</th><th>Actions</th></tr></thead>
+            <tbody>${cats.map(c=>`<tr>
+              <td style="font-size:1.5rem">${c.icon || '🍽️'}</td>
+              <td><strong>${c.name}</strong></td>
+              <td style="font-family:'Barlow Condensed';color:rgba(245,236,215,.4)">${c.slug}</td>
+              <td>${c.sort_order || 0}</td>
+              <td>
+                <button class="abtn" onclick="editCategory(${JSON.stringify(c).replace(/'/g,'&#39;')})">✏ Edit</button>
+                <button class="abtn danger" onclick="deleteCategory(${c.id})">🗑 Del</button>
+              </td>
+            </tr>`).join('')}</tbody>
+          </table>
+        </div>
+        <div class="item-form" id="category-form-box" style="display:none">
+          <h3 id="category-form-title">Add Category</h3>
+          <div class="fg"><label for="cat-name">Name *</label><input type="text" id="cat-name" placeholder="e.g. Sandwiches"></div>
+          <div class="fg"><label for="cat-slug">Slug</label><input type="text" id="cat-slug" placeholder="sandwiches"></div>
+          <div class="fg"><label for="cat-icon">Icon</label><input type="text" id="cat-icon" placeholder="🍔"></div>
+          <div class="fg"><label for="cat-sort">Sort Order</label><input type="number" id="cat-sort" min="0" value="0"></div>
+          <div class="form-actions">
+            <button class="btn-sm primary" onclick="saveCategory()">Save Category</button>
+            <button class="btn-sm secondary" onclick="closeCategoryForm()">Cancel</button>
+          </div>
+        </div>
       </div>`;
   } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Failed to load.</p>'; }
+}
+
+function openCategoryForm() {
+  editingCategoryId = null;
+  document.getElementById('category-form-title').textContent = 'Add Category';
+  document.getElementById('cat-name').value = '';
+  document.getElementById('cat-slug').value = '';
+  document.getElementById('cat-icon').value = '';
+  document.getElementById('cat-sort').value = '0';
+  document.getElementById('category-form-box').style.display = 'block';
+  document.getElementById('category-form-box').scrollIntoView({behavior:'smooth'});
+}
+
+function editCategory(category) {
+  editingCategoryId = category.id;
+  document.getElementById('category-form-title').textContent = 'Edit Category';
+  document.getElementById('cat-name').value = category.name || '';
+  document.getElementById('cat-slug').value = category.slug || '';
+  document.getElementById('cat-icon').value = category.icon || '';
+  document.getElementById('cat-sort').value = category.sort_order || 0;
+  document.getElementById('category-form-box').style.display = 'block';
+  document.getElementById('category-form-box').scrollIntoView({behavior:'smooth'});
+}
+
+function closeCategoryForm() {
+  editingCategoryId = null;
+  document.getElementById('category-form-box').style.display = 'none';
+}
+
+async function saveCategory() {
+  const name = document.getElementById('cat-name').value.trim();
+  const slug = document.getElementById('cat-slug').value.trim();
+  const icon = document.getElementById('cat-icon').value.trim();
+  const sort_order = parseInt(document.getElementById('cat-sort').value || '0', 10);
+  if(!name) return toast('Category name is required','error');
+  try {
+    const payload = { name, slug: slug || slugify(name), icon: icon || '🍽️', sort_order };
+    const method = editingCategoryId ? 'PUT' : 'POST';
+    const url = editingCategoryId ? `/menu/categories/${editingCategoryId}` : '/menu/categories';
+    await api(url, method, payload);
+    toast(editingCategoryId ? 'Category updated ✓' : 'Category added ✓');
+    closeCategoryForm();
+    loadAdminCategories();
+    loadMenuPage();
+  } catch(e) { toast(e.message,'error'); }
+}
+
+async function deleteCategory(id) {
+  if(!confirm('Delete this category?')) return;
+  try {
+    await api(`/menu/categories/${id}`,'DELETE');
+    toast('Category deleted');
+    loadAdminCategories();
+    loadMenuPage();
+  } catch(e) { toast(e.message,'error'); }
 }
 
 async function loadAdminReviews() {
@@ -1426,11 +2382,11 @@ async function deleteReview(id) {
   try { await api(`/reviews/${id}`,'DELETE'); toast('Deleted'); loadAdminReviews(); }
   catch(e) { toast(e.message,'error'); }
 }
-
+//path
 function resolveImageUrl(path) {
   if(!path) return null;
-  if(path.startsWith('http://') || path.startsWith('https://') || path.startsWith('/')) return path;
-  return (API === '/api' ? '/uploads/' + path.replace(/^\//,'') : new URL(path, API_ORIGIN).href);
+  if(path.startsWith('http://') || path.startsWith('https://')) return path;
+  return new URL(path, API_ORIGIN).href;
 }
 
 async function loadSiteSettings() {
@@ -1438,14 +2394,27 @@ async function loadSiteSettings() {
   try {
     const s = await api('/settings/');
     document.getElementById('admin-content').innerHTML=`
-      <div class="admin-hdr"><div class="admin-title">Site Images</div></div>
+      <div class="admin-hdr"><div class="admin-title">Site Settings</div></div>
       <p style="color:rgba(245,236,215,.45);font-size:.88rem;margin-bottom:2rem;line-height:1.6">
-        Upload images here to change what appears on the website. Recommended size: <strong>1920×1080px or larger</strong> for sharp quality.
-        Changes apply instantly after upload.
+        Update site images, notifications, and payment methods from this panel. Recommended size for hero images is <strong>1920×1080px or larger</strong>.
+        Changes apply instantly after upload or method updates.
       </p>
+      <div style="margin-bottom:2rem;background:rgba(26,18,8,.5);border:1px solid rgba(230,126,34,.2);border-radius:4px;padding:1.5rem">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:1px;margin-bottom:.8rem;color:var(--amber)">📧 Email Notifications</div>
+        <p style="color:rgba(245,236,215,.55);font-size:.86rem;line-height:1.6;margin-bottom:1rem">
+          Enter your email address to receive notifications for new orders, reservations, and reviews.
+        </p>
+        <div style="display:flex;gap:1rem;align-items:flex-end">
+          <div style="flex:1">
+            <label style="display:block;font-family:'Barlow Condensed',sans-serif;font-size:.9rem;letter-spacing:1px;margin-bottom:.4rem;color:rgba(245,236,215,.7)">Admin Email Address</label>
+            <input type="email" id="admin-email-input" placeholder="admin@example.com" value="${s.admin_email || ''}" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--cream);padding:.55rem .8rem;border-radius:2px;font-family:'Barlow',sans-serif;font-size:.88rem;outline:none;transition:border-color .2s">
+          </div>
+          <button class="btn-sm primary" onclick="saveAdminEmail()">Save Email</button>
+        </div>
+      </div>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem">
         ${[
-          {slot:'hero_image',       label:'🏠 Hero Background',        desc:'Main full-screen background on homepage'},
+          {slot:'hero_image',       label:'🏠 Hero Background',        desc:'Primary hero image used as the starting background'},
           {slot:'photo_strip_1',    label:'📷 Photo Strip — Left',      desc:'First photo in the 3-photo strip'},
           {slot:'photo_strip_2',    label:'📷 Photo Strip — Middle',    desc:'Middle photo (also used for cocktail banner)'},
           {slot:'photo_strip_3',    label:'📷 Photo Strip — Right',     desc:'Third photo in the strip'},
@@ -1476,6 +2445,69 @@ async function loadSiteSettings() {
           </div>`;
         }).join('')}
       </div>
+      <div style="margin-top:1.5rem;background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.5rem">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:1px;margin-bottom:.8rem;color:var(--amber)">🎞️ Hero Slideshow</div>
+        <p style="color:rgba(245,236,215,.55);font-size:.86rem;line-height:1.6;margin-bottom:1rem">
+          Upload as many hero background photos as you want. The homepage will rotate through them automatically for a full slideshow.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1rem">
+          ${(() => {
+            const heroSlides = (Array.isArray(s.hero_images) ? s.hero_images : []).map((url, idx) => ({ slot:'hero_images', index: idx, url }));
+            if(!heroSlides.length) return '<div style="grid-column:1 / -1;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:2px;padding:1rem;text-align:center;color:rgba(245,236,215,.45)">No hero slideshow images yet</div>';
+            return heroSlides.map((entry, idx) => `
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:2px;padding:.7rem">
+                <img src="${resolveImageUrl(entry.url)}" style="width:100%;height:120px;object-fit:cover;background:rgba(26,18,8,.35);border-radius:2px;margin-bottom:.6rem;border:1px solid rgba(255,255,255,.08)">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem">
+                  <span style="font-size:.72rem;color:rgba(245,236,215,.45)">Slide ${idx + 1}</span>
+                  <button class="abtn danger" onclick="removeImage('${entry.slot}',${entry.index})">✕ Remove</button>
+                </div>
+              </div>`).join('');
+          })()}
+        </div>
+        <label style="display:inline-block;background:var(--rust);color:#fff;padding:.55rem 1rem;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;cursor:pointer;text-align:center">
+          📤 Upload another hero image
+          <input type="file" accept="image/*" style="display:none" onchange="uploadImage('hero_images',this)">
+        </label>
+      </div>
+      <div style="margin-top:1.2rem;display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+        <div style="flex:1;min-width:220px;background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1rem">
+          <div style="font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.95rem;letter-spacing:1px;margin-bottom:.4rem">✨ Motion & Particles</div>
+          <div style="font-size:.86rem;color:rgba(245,236,215,.6);margin-bottom:.6rem">Enable hero particles for extra ambience. Disable for low-power devices.</div>
+          <div style="display:flex;gap:.6rem;align-items:center">
+            <label style="display:inline-flex;align-items:center;gap:.6rem;cursor:pointer">
+              <input type="checkbox" id="particles-toggle" ${s.disable_particles? '': 'checked'} onchange="saveSetting('disable_particles', !this.checked)">
+              <span style="font-size:.9rem;color:rgba(245,236,215,.6)">Particles enabled</span>
+            </label>
+            <button class="btn-secondary" onclick="applyBackendImages()">Refresh Images</button>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:2rem;background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.5rem">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:1px;margin-bottom:.8rem;color:var(--amber)">🖼️ Unlimited Gallery Images</div>
+        <p style="color:rgba(245,236,215,.55);font-size:.86rem;line-height:1.6;margin-bottom:1rem">
+          Add as many gallery photos as you want from the backend. This section is no longer limited to a few fixed slots.
+        </p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:1rem">
+          ${(() => {
+            const legacyGalleryImages = [1,2,3,4].map(i => ({ slot: 'gallery_image_' + i, url: s['gallery_image_' + i] })).filter(x => x.url);
+            const arrayGalleryImages = (Array.isArray(s.gallery_images) ? s.gallery_images : []).map((url, idx) => ({ slot: 'gallery_images', index: idx, url }));
+            const galleryEntries = [...legacyGalleryImages, ...arrayGalleryImages];
+            if(!galleryEntries.length) return '<div style="grid-column:1 / -1;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.12);border-radius:2px;padding:1rem;text-align:center;color:rgba(245,236,215,.45)">No gallery images yet</div>';
+            return galleryEntries.map((entry, idx) => `
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:2px;padding:.7rem">
+                <img src="${resolveImageUrl(entry.url)}" style="width:100%;height:120px;object-fit:contain;background:rgba(26,18,8,.35);border-radius:2px;margin-bottom:.6rem;border:1px solid rgba(255,255,255,.08);padding:.3rem">
+                <div style="display:flex;justify-content:space-between;align-items:center;gap:.5rem">
+                  <span style="font-size:.72rem;color:rgba(245,236,215,.45)">Image ${idx + 1}</span>
+                  <button class="abtn danger" onclick="removeImage('${entry.slot}'${entry.index !== undefined ? ',' + entry.index : ''})">✕ Remove</button>
+                </div>
+              </div>`).join('');
+          })()}
+        </div>
+        <label style="display:inline-block;background:var(--rust);color:#fff;padding:.55rem 1rem;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-size:.82rem;letter-spacing:1px;cursor:pointer;text-align:center">
+          📤 Upload another image
+          <input type="file" accept="image/*" style="display:none" onchange="uploadImage('gallery_images',this)">
+        </label>
+      </div>
       <div style="margin-top:2rem;background:rgba(230,126,34,.08);border:1px solid rgba(230,126,34,.2);border-radius:4px;padding:1.2rem">
         <div style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:var(--amber);margin-bottom:.5rem">💡 Tips for best results</div>
         <ul style="font-size:.82rem;color:rgba(245,236,215,.55);line-height:1.8;padding-left:1.2rem">
@@ -1484,8 +2516,39 @@ async function loadSiteSettings() {
           <li>After upload, refresh the main page to see changes live</li>
           <li>Max file size: 10MB per image</li>
         </ul>
+      </div>
+      <div style="margin-top:2rem;background:rgba(26,18,8,.5);border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.5rem">
+        <div style="font-family:'Barlow Condensed',sans-serif;font-size:.95rem;letter-spacing:1px;margin-bottom:.8rem;color:var(--amber)">💳 Hosted Checkout</div>
+        <p style="color:rgba(245,236,215,.55);font-size:.88rem;line-height:1.6">
+          Payment methods are now fixed to Stripe and PayPal for online checkout, with "Pay at Pickup" only available for pickup and dine-in orders.
+          Delivery orders require a hosted Stripe or PayPal payment before the order is placed.
+        </p>
       </div>`;
   } catch(e) { document.getElementById('admin-content').innerHTML='<p class="no-data">Failed to load settings. Is backend running?</p>'; }
+}
+
+// Add particles toggle UI in settings area
+async function saveSetting(key, value) {
+  try {
+    const body = {};
+    body[key] = value;
+    await api('/settings','PUT', body);
+    toast('Setting saved','success');
+    await loadSiteSettings();
+    applyBackendImages();
+  } catch(e) { toast(e.message,'error'); }
+}
+
+async function saveAdminEmail() {
+  const emailInput = document.getElementById('admin-email-input');
+  if (!emailInput) return;
+  const email = emailInput.value.trim();
+  if (!email) { toast('Please enter an email address','error'); return; }
+  try {
+    await api('/settings','PUT', { admin_email: email });
+    toast('Admin email saved! You\'ll receive notifications for orders, reservations, and reviews.','success');
+    loadSiteSettings();
+  } catch(e) { toast(e.message,'error'); }
 }
 
 async function uploadImage(slot, input) {
@@ -1509,29 +2572,103 @@ async function uploadImage(slot, input) {
   } catch(e) { toast(e.message,'error'); }
 }
 
-async function removeImage(slot) {
+async function initCheckoutPaymentOptions() {
+  updateCheckoutPaymentNote();
+  const container = document.getElementById('payment-methods-grid');
+  if(!container) return;
+  paymentConfirmed = false;
+  document.getElementById('payment-confirmation').style.display='none';
+  const options = [
+    { value:'stripe', title:'Pay with Stripe', subtitle:'Secure card checkout powered by Stripe' },
+    { value:'paypal', title:'Pay with PayPal', subtitle:'Use PayPal hosted checkout' },
+    { value:'pickup', title:'Pay at Pickup', subtitle:'Only available for pickup or dine-in orders', disabled: orderType==='delivery' }
+  ];
+  if(orderType==='delivery' && paymentMethod==='pickup') {
+    paymentMethod = 'stripe';
+  }
+  container.innerHTML = options.map(opt => `
+    <label class="payment-option" style="cursor:pointer;opacity:${opt.disabled?0.5:1};">
+      <input type="radio" name="payment-method" value="${opt.value}" ${paymentMethod===opt.value?'checked':''} ${opt.disabled?'disabled':''} onchange="setPaymentMethod('${opt.value}')">
+      <strong>${opt.title}</strong><br><span style="font-size:.82rem;color:rgba(245,236,215,.55)">${opt.subtitle}</span>
+    </label>
+  `).join('');
+  const selected = options.find(o => o.value === paymentMethod);
+  if(!selected) {
+    paymentMethod = 'stripe';
+    setPaymentMethod(paymentMethod);
+  }
+Í}
+
+async function removeImage(slot, index=null) {
   if(!confirm('Remove this image?')) return;
   try {
-    await api('/settings/image/'+slot,'DELETE');
+    const url = slot === 'gallery_images' && index !== null ? `/settings/image/${slot}?index=${index}` : `/settings/image/${slot}`;
+    await api(url,'DELETE');
     toast('Image removed');
     loadSiteSettings();
     applyBackendImages();
   } catch(e) { toast(e.message,'error'); }
 }
 
+function setHeroBackground(url) {
+  const heroBg = document.getElementById('hero-bg');
+  if(heroBg && url) heroBg.style.backgroundImage = `url(${url})`;
+}
+
+function startHeroSlideshow() {
+  clearInterval(heroSlideTimer);
+  if(heroSlideImages.length <= 1) return;
+  heroSlideTimer = setInterval(() => {
+    heroSlideIndex = (heroSlideIndex + 1) % heroSlideImages.length;
+    setHeroBackground(heroSlideImages[heroSlideIndex]);
+  }, 7000);
+}
+
 async function applyBackendImages() {
   try {
     const s = await api('/settings/');
-    const hero = resolveImageUrl(s.hero_image);
+    const heroSlides = (Array.isArray(s.hero_images) ? s.hero_images : [])
+      .map(url => resolveImageUrl(url))
+      .filter(Boolean);
+    const heroFallback = resolveImageUrl(s.hero_image);
+    const heroImages = heroSlides.length ? heroSlides : (heroFallback ? [heroFallback] : []);
     const photo1 = resolveImageUrl(s.photo_strip_1);
     const photo2 = resolveImageUrl(s.photo_strip_2);
     const photo3 = resolveImageUrl(s.photo_strip_3);
     const cocktail = resolveImageUrl(s.cocktail_banner_image);
-    if(hero) document.getElementById('hero-bg').style.backgroundImage = `url(${hero})`;
+    const galleryGrid = document.getElementById('gallery-grid');
+    const galleryImages = (Array.isArray(s.gallery_images) ? s.gallery_images : []).map(url => resolveImageUrl(url)).filter(Boolean);
+    const fallbackGalleryImages = [1,2,3,4].map(i => resolveImageUrl(s['gallery_image_' + i])).filter(Boolean);
+    const liveGalleryImages = galleryImages.length ? galleryImages : fallbackGalleryImages;
+
+    heroSlideImages = heroImages;
+    heroSlideIndex = 0;
+    if(heroImages.length) setHeroBackground(heroImages[0]);
+    startHeroSlideshow();
+
     if(photo1) document.getElementById('photo1').src = photo1;
     if(photo2) document.getElementById('photo2').src = photo2;
     if(photo3) document.getElementById('photo3').src = photo3;
     if(cocktail) document.getElementById('cocktail-img').src = cocktail;
+
+    if(galleryGrid) {
+      galleryGrid.innerHTML = liveGalleryImages.length ? liveGalleryImages.map((url, index) => `
+        <div class="gallery-card" style="animation-delay:${index * 0.08}s">
+          <img src="${url}" alt="Gallery image ${index + 1}">
+          <div class="gallery-card-overlay">
+            <span>Live view ${index + 1}</span>
+            <strong>Fresh from West Texas</strong>
+          </div>
+        </div>
+      `).join('') : `<div class="gallery-empty">Upload a few photos from the admin settings to make this gallery come alive for customers.</div>`;
+    }
+    // particles setting
+    if(s && s.disable_particles) {
+      const c = document.getElementById('hero-canvas'); if(c) c.remove();
+    } else {
+      // ensure particles start
+      ensureHeroParticles();
+    }
   } catch(e) {}
 }
      
