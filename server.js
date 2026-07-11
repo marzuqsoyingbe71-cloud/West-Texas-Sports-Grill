@@ -400,7 +400,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
-app.post('/api/settings/upload-image/:slot', upload.single('file'), (req,res)=>{
+app.post('/api/settings/upload-image/:slot', validateAdminOrApiKey, upload.single('file'), (req,res)=>{
   const slot = req.params.slot;
   if(!req.file) return res.status(400).json({detail:'No file uploaded'});
   const rel = '/uploads/' + req.file.filename;
