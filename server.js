@@ -233,10 +233,19 @@ function validateApiKey(req, res, next) {
 
 function getUserFromToken(token) {
   if(!token || typeof token !== 'string') return null;
-  const match = token.match(/^token-(\d+)$/);
-  if(!match) return null;
+
+  const cleaned = token.trim();
+  const directMatch = cleaned.match(/^token-(\d+)$/);
+  if(directMatch) {
+    const users = readJSON('users.json', []);
+    return users.find(u => u.id === Number(directMatch[1])) || null;
+  }
+
   const users = readJSON('users.json', []);
-  return users.find(u => u.id === Number(match[1])) || null;
+  const fallback = users.find(u => u.access_token === cleaned || u.token === cleaned || u.id === Number(cleaned));
+  if(fallback) return fallback;
+
+  return null;
 }
 
 function validateAdminOrApiKey(req, res, next) {
@@ -244,6 +253,15 @@ function validateAdminOrApiKey(req, res, next) {
   if(authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.slice(7).trim();
     const user = getUserFromToken(token);
+    if(user && user.role === 'admin') {
+      req.user = user;
+      return next();
+    }
+  }
+
+  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token;
+  if(authToken) {
+    const user = getUserFromToken(authToken);
     if(user && user.role === 'admin') {
       req.user = user;
       return next();
