@@ -2034,7 +2034,10 @@ async function saveNews() {
     const path = editingNewsId ? '/news/' + editingNewsId : '/news';
     const response = await fetch(API + path, {
       method,
-      headers: token ? {'Authorization': 'Bearer ' + token} : {},
+      headers: token ? {
+        'Authorization': 'Bearer ' + token,
+        'x-auth-token': token
+      } : {},
       body: fd
     });
     const data = await response.json();
@@ -2622,7 +2625,10 @@ async function uploadImage(slot, input) {
   try {
     const r = await fetch(API + '/settings/upload-image/' + slot, {
       method:'POST',
-      headers: token ? {'Authorization':'Bearer '+token} : {},
+      headers: token ? {
+        'Authorization':'Bearer '+token,
+        'x-auth-token': token
+      } : {},
       body: fd
     });
     const data = await r.json();
