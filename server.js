@@ -11,14 +11,45 @@ const UPLOADS_DIR = path.join(__dirname, 'uploads');
 if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 if(!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
 
+function readJSON(name, fallback) {
+  const filePath = path.join(DATA_DIR, name);
+  try {
+    if (fs.existsSync(filePath)) {
+      const content = fs.readFileSync(filePath, 'utf-8');
+      return JSON.parse(content);
+    }
+  } catch (e) {
+    console.log(`Error reading ${name}:`, e.message);
+  }
+  // Write fallback if file doesn't exist
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(fallback || {}, null, 2), 'utf-8');
+  } catch (e) {
+    console.log(`Error writing ${name}:`, e.message);
+  }
+  return fallback || {};
+}
+
+function writeJSON(name, data) {
+  const filePath = path.join(DATA_DIR, name);
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
+  } catch (e) {
+    console.log(`Error writing ${name}:`, e.message);
+  }
+}
+
 const app = express();
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(__dirname));
 
-// Optional payment SDKs (only used if env vars present and packages installed)
+app.get('/api/health', (req, res) => {
+  res.json({ ok: true, service: 'west-texas-sports-grill' });
+});
+
 let stripe = null;
 try{
   if(process.env.STRIPE_SECRET_KEY) stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -33,13 +64,20 @@ try{
   }
 }catch(e){ console.log('PayPal SDK not available:', e.message); }
 
-// helpers
-function readJSON(name, fallback) {
-  const p = path.join(DATA_DIR, name);
-  if(!fs.existsSync(p)) { fs.writeFileSync(p, JSON.stringify(fallback || {})); }
-  return JSON.parse(fs.readFileSync(p,'utf8'));
+async function initApp() {
+  // File-based storage is now used directly in readJSON/writeJSON
 }
-function writeJSON(name, data) { fs.writeFileSync(path.join(DATA_DIR,name), JSON.stringify(data, null, 2)); }
+
+initApp().then(() => {
+  ensureSampleData();
+  const port = Number(process.env.PORT) || 3000;
+  scheduleDailyDashboardRefresh();
+  app.listen(port, '0.0.0.0', ()=> console.log('Server started on', port));
+}).catch(err => {
+  console.error('Failed to initialize app:', err);
+});
+
+// helpers
 function computeOrderTotal(order, menuItems) {
   const items = order.items || [];
   return items.reduce((sum, item) => {
@@ -237,15 +275,16 @@ const sampleNews = [
   {id:2,title:'New Summer Menu Available',description:'Explore our exciting new summer menu featuring fresh ingredients and creative seasonal dishes.',category:'menu',image:null,date:'2026-06-25',highlight:false,created_at:'2026-06-25T00:00:00Z'}
 ];
 
-// ensure data files
-readJSON('menu.json', sampleMenu);
-readJSON('categories.json', sampleCats);
-readJSON('settings.json', sampleSettings);
-readJSON('orders.json', []);
-readJSON('reservations.json', []);
-readJSON('reviews.json', []);
-readJSON('users.json', sampleUsers);
-readJSON('news.json', sampleNews);
+function ensureSampleData() {
+  readJSON('menu.json', sampleMenu);
+  readJSON('categories.json', sampleCats);
+  readJSON('settings.json', sampleSettings);
+  readJSON('orders.json', []);
+  readJSON('reservations.json', []);
+  readJSON('reviews.json', []);
+  readJSON('users.json', sampleUsers);
+  readJSON('news.json', sampleNews);
+}
 
 function parseBoolean(value) {
   if(typeof value === 'boolean') return value;
@@ -908,7 +947,7 @@ app.delete('/api/news/:id', validateAdminOrApiKey, (req,res)=>{
 // small health
 app.get('/api/', (req,res)=> res.json({ok:true}));
 
-const port = process.env.PORT || 3000;
+const port = Number(process.env.PORT) || 3000;
 // Schedule daily dashboard cache refresh at midnight server local time
 function scheduleDailyDashboardRefresh(){
   const runRefresh = ()=>{
@@ -932,7 +971,3 @@ function scheduleDailyDashboardRefresh(){
     setInterval(runRefresh, 24*60*60*1000);
   }, msUntil);
 }
-
-scheduleDailyDashboardRefresh();
-
-app.listen(port, ()=> console.log('Server started on', port));

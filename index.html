@@ -30,11 +30,18 @@ img{display:block;max-width:100%;height:auto;image-rendering:auto;-ms-interpolat
 @keyframes slowSpin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
 
 /* NAV */
-nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;padding:1rem 3rem;background:rgba(26,18,8,0.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(192,57,43,0.25);box-shadow:0 8px 30px rgba(0,0,0,.22)}
-.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--amber);cursor:pointer}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;display:flex;align-items:center;justify-content:space-between;gap:1rem;padding:1rem 3rem;background:rgba(26,18,8,0.9);backdrop-filter:blur(14px);border-bottom:1px solid rgba(192,57,43,0.25);box-shadow:0 8px 30px rgba(0,0,0,.22)}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:1.4rem;letter-spacing:3px;color:var(--amber);cursor:pointer;flex-shrink:0}
 .nav-links{display:flex;gap:2rem;list-style:none;align-items:center}
 .nav-links a{color:var(--cream);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.85rem;letter-spacing:2px;text-transform:uppercase;opacity:.75;transition:opacity .2s,color .2s;cursor:pointer}
 .nav-links a:hover{opacity:1;color:var(--amber)}
+.nav-actions{display:flex;align-items:center;gap:.7rem;flex-wrap:wrap;justify-content:flex-end}
+.mobile-nav-toggle{display:none;align-items:center;justify-content:center;width:2.6rem;height:2.6rem;border:1px solid rgba(245,236,215,.2);background:rgba(255,255,255,.04);color:var(--cream);border-radius:999px;cursor:pointer}
+.mobile-nav-toggle:hover{border-color:var(--amber);color:var(--amber)}
+.mobile-nav-panel{display:none;padding:0 1rem 1rem;background:rgba(26,18,8,.96);border-bottom:1px solid rgba(192,57,43,.2)}
+.mobile-nav-links{display:flex;flex-direction:column;gap:1rem;list-style:none;padding-top:.6rem}
+.mobile-nav-links a{color:var(--cream);text-decoration:none;font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:.9rem;letter-spacing:2px;text-transform:uppercase;opacity:.8}
+.mobile-nav-links a:hover{color:var(--amber)}
 .cart-btn{background:var(--rust);color:#fff;border:none;padding:.55rem 1.2rem;border-radius:2px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:.85rem;letter-spacing:2px;cursor:pointer;display:flex;align-items:center;gap:.5rem;transition:background .2s}
 .cart-btn:hover{background:#a93226}
 .cart-count{background:#fff;color:var(--rust);border-radius:50%;width:18px;height:18px;font-size:.7rem;display:inline-flex;align-items:center;justify-content:center;font-weight:700}
@@ -396,8 +403,10 @@ select option {
 }
 
 @media(max-width:900px){
-  nav{padding:.8rem 1.2rem}
+  nav{padding:.8rem 1rem;flex-wrap:wrap}
   .nav-links{display:none}
+  .mobile-nav-toggle{display:inline-flex}
+  .nav-actions{margin-left:auto}
   .section,.hero{padding-left:1.2rem;padding-right:1.2rem}
   .info-bar{padding:1rem 1.2rem;gap:1rem}
   .features{padding:2rem 1.2rem}
@@ -412,6 +421,32 @@ select option {
   .menu-admin-grid{grid-template-columns:1fr}
   .hero-stats{display:none}
   .cocktail-banner{height:300px}
+  .mobile-nav-panel.open{display:block}
+}
+
+@media(max-width:600px){
+  nav{padding:.75rem 1rem}
+  .nav-actions{width:100%;justify-content:flex-end;margin-top:.2rem}
+  .hero{min-height:auto;padding:4rem 1rem 3rem}
+  .hero-content{max-width:none}
+  h1.hero-title{font-size:clamp(2.8rem,12vw,3.8rem)}
+  .hero-desc{font-size:.95rem;line-height:1.6}
+  .hero-actions{flex-direction:column;align-items:flex-start}
+  .btn-primary,.btn-secondary{width:100%;text-align:center;justify-content:center}
+  .hero-highlight-card{padding:.95rem 1rem}
+  .section{padding:3rem 1rem}
+  .features{padding:2rem 1rem}
+  .info-bar{padding:1rem}
+  .photo-strip{grid-template-columns:1fr;height:auto}
+  .photo-strip-item{min-height:180px}
+  .gallery-grid,.menu-grid,.specials-grid,.menu-group-grid,.news-grid{grid-template-columns:1fr}
+  .menu-card{padding:1.2rem}
+  .mc-footer{flex-direction:column;align-items:flex-start;gap:.75rem}
+  .map-info{padding:1.5rem}
+  .map-embed iframe{min-height:280px}
+  .modal{padding:1.25rem;width:95%}
+  .toast-container{left:1rem;right:1rem;top:1rem}
+  .toast{max-width:none}
 }
 
 #hero-bg { background-size: cover !important; background-position: center center !important; }
@@ -422,6 +457,7 @@ select option {
 <!-- NAV -->
 <nav>
   <div class="nav-logo" onclick="showPage('home')">West Texas Sports Grill</div>
+  <button class="mobile-nav-toggle" id="mobile-nav-toggle" onclick="toggleMobileNav()" aria-label="Toggle navigation" aria-expanded="false">☰</button>
   <ul class="nav-links">
     <li><a onclick="showPage('home')">Home</a></li>
     <li><a onclick="showPage('menu')">Menu</a></li>
@@ -431,11 +467,22 @@ select option {
     <li><a onclick="showPage('reviews')">Reviews</a></li>
     <li><a onclick="showPage('admin')" id="admin-link" style="display:none">⚙ Admin</a></li>
   </ul>
-  <div style="display:flex;gap:.7rem;align-items:center">
+  <div class="nav-actions">
     <button class="auth-btn" id="auth-btn" onclick="openAuthModal()">Sign In</button>
     <button class="cart-btn" onclick="toggleCart()">🛒 Cart <span class="cart-count" id="cart-count">0</span></button>
   </div>
 </nav>
+<div class="mobile-nav-panel" id="mobile-nav-panel">
+  <ul class="mobile-nav-links">
+    <li><a onclick="showPage('home')">Home</a></li>
+    <li><a onclick="showPage('menu')">Menu</a></li>
+    <li><a onclick="showPage('news')">News & Events</a></li>
+    <li><a onclick="showPage('reservations')">Reserve</a></li>
+    <li><a onclick="showPage('track')">Track Order</a></li>
+    <li><a onclick="showPage('reviews')">Reviews</a></li>
+    <li><a onclick="showPage('admin')" id="mobile-admin-link" style="display:none">⚙ Admin</a></li>
+  </ul>
+</div>
 
 <div class="toast-container" id="toasts"></div>
 
@@ -906,7 +953,8 @@ function setupLiveAnimations() {
 
 const API_REMOTE = 'https://west-texas-sports-grill-backend.onrender.com/api';
 const API_LOCAL = 'http://localhost:3000/api';
-const API = (['localhost','127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
+
+const API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
 const API_ORIGIN = new URL(API).origin;
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
@@ -936,6 +984,7 @@ function showPage(name) {
   if(!pg) return;
   pg.classList.add('active');
   window.scrollTo(0,0);
+  closeMobileNav();
   if(name === 'menu') loadMenuPage();
   if(name === 'news') loadNews();
   if(name === 'reviews') loadReviews();
@@ -1287,6 +1336,18 @@ function updateAuthUI() {
 }
 function openAuthModal() { document.getElementById('auth-modal').classList.add('open'); }
 function closeAuthModal() { document.getElementById('auth-modal').classList.remove('open'); }
+function toggleMobileNav() {
+  const panel = document.getElementById('mobile-nav-panel');
+  const toggle = document.getElementById('mobile-nav-toggle');
+  const isOpen = panel.classList.toggle('open');
+  toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+}
+function closeMobileNav() {
+  const panel = document.getElementById('mobile-nav-panel');
+  const toggle = document.getElementById('mobile-nav-toggle');
+  panel.classList.remove('open');
+  toggle.setAttribute('aria-expanded', 'false');
+}
 function authTab(tab, el) {
   document.querySelectorAll('#auth-modal .tab').forEach(t=>t.classList.remove('active'));
   el.classList.add('active');
