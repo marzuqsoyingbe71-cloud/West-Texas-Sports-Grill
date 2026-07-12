@@ -462,7 +462,6 @@ select option {
     <li><a onclick="showPage('home')">Home</a></li>
     <li><a onclick="showPage('menu')">Menu</a></li>
     <li><a onclick="showPage('news')">News & Events</a></li>
-    <li><a onclick="showPage('careers')">Careers</a></li>
     <li><a onclick="showPage('reservations')">Reserve</a></li>
     <li><a onclick="showPage('track')">Track Order</a></li>
     <li><a onclick="showPage('reviews')">Reviews</a></li>
@@ -478,7 +477,6 @@ select option {
     <li><a onclick="showPage('home')">Home</a></li>
     <li><a onclick="showPage('menu')">Menu</a></li>
     <li><a onclick="showPage('news')">News & Events</a></li>
-    <li><a onclick="showPage('careers')">Careers</a></li>
     <li><a onclick="showPage('reservations')">Reserve</a></li>
     <li><a onclick="showPage('track')">Track Order</a></li>
     <li><a onclick="showPage('reviews')">Reviews</a></li>
@@ -492,6 +490,10 @@ select option {
 <div class="page active" id="page-home">
   <section class="hero" id="hero-section">
     <div class="hero-bg" id="hero-bg"></div>
+    <!-- Temporary test image added to verify uploads are served correctly -->
+    <div style="text-align:center;margin-top:1rem">
+      <img id="manual-image" src="/uploads/1782831918802-a-steak-on-a-wooden-board-with-a-blank-sign-photo.jpg" alt="Test upload image" style="max-width:90%;height:auto;border-radius:6px;box-shadow:0 6px 18px rgba(0,0,0,.35)">
+    </div>
     <canvas id="hero-canvas" aria-hidden="true"></canvas>
     <div class="hero-bg-text">GRILL</div>
     <div class="hero-content">
@@ -626,7 +628,6 @@ select option {
       <a onclick="showPage('menu')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Menu</a>
       <a onclick="showPage('reservations')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Reserve</a>
       <a onclick="showPage('reviews')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Reviews</a>
-      <a onclick="showPage('careers')" style="font-family:'Barlow Condensed',sans-serif;font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:rgba(245,236,215,.35);cursor:pointer;text-decoration:none;transition:color .2s" onmouseover="this.style.color='var(--amber)'" onmouseout="this.style.color='rgba(245,236,215,.35)'">Careers</a>
     </div>
     <div style="display:flex;flex-direction:column;gap:.6rem;font-family:'Barlow Condensed',sans-serif;font-size:.75rem;color:rgba(245,236,215,.35);letter-spacing:1px">
       <a href="https://instagram.com/west.texas.sports.grill" target="_blank" rel="noopener noreferrer" title="Visit Instagram" style="display:inline-flex;align-items:center;gap:.6rem;color:rgba(245,236,215,.75);text-decoration:none;transition:all .2s" onmouseover="this.style.color='var(--amber)';this.style.transform='translateY(-1px)'" onmouseout="this.style.color='rgba(245,236,215,.75)';this.style.transform='translateY(0)'">
@@ -782,35 +783,6 @@ select option {
   </div>
 </div>
 
-<!-- ══ CAREERS ══ -->
-<div class="page" id="page-careers">
-  <section class="section">
-    <div class="sec-label">Join the Team</div>
-    <h2 class="sec-title">Careers at <span>West Texas Sports Grill</span></h2>
-    <p class="section-copy" style="max-width:640px;margin-bottom:2rem">Looking for a fun, fast-paced opportunity in Canyon, TX? Apply now to join our crew and help serve great food, drinks, and hospitality.</p>
-    <div class="careers-grid" id="career-form-wrap">
-      <div class="form-row">
-        <div class="form-group"><label for="career-name">Full Name *</label><input type="text" id="career-name" placeholder="Your full name"></div>
-        <div class="form-group"><label for="career-email">Email *</label><input type="email" id="career-email" placeholder="you@example.com"></div>
-      </div>
-      <div class="form-row">
-        <div class="form-group"><label for="career-phone">Phone *</label><input type="tel" id="career-phone" placeholder="806-000-0000"></div>
-        <div class="form-group"><label for="career-position">Position *</label><input type="text" id="career-position" placeholder="Server, Cook, Bartender..."></div>
-      </div>
-      <div class="form-group"><label for="career-message">Tell Us Why You’d Be a Great Fit</label><textarea id="career-message" placeholder="Share your experience, availability, and what excites you about this job."></textarea></div>
-      <div class="form-group"><label for="career-resume">Resume (optional)</label><input type="file" id="career-resume" accept=".pdf,.doc,.docx"></div>
-      <button class="btn-primary" onclick="submitJobApplication()">Submit Application</button>
-      <p style="margin-top:1rem;font-size:.9rem;color:rgba(245,236,215,.5)">You’ll hear back from us soon. Resume uploads are saved securely to our application file store.</p>
-    </div>
-    <div class="success-box" id="career-success" style="display:none;margin-top:1.5rem">
-      <div class="check">✅</div>
-      <h3>Application submitted!</h3>
-      <p>Thanks for applying. We’ll review your submission and be in touch soon.</p>
-      <button class="btn-secondary" onclick="resetCareerForm()">Submit another application</button>
-    </div>
-  </section>
-</div>
-
 <!-- ══ REVIEWS ══ -->
 <div class="page" id="page-reviews">
   <section class="section">
@@ -903,14 +875,13 @@ select option {
       <div class="tab" onclick="authTab('register',this)">Create Account</div>
     </div>
     <div id="login-form">
-      <div class="form-group"><label for="login-username">Username or Email</label><input type="text" id="login-username" placeholder="username or email"></div>
+      <div class="form-group"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="email@example.com"></div>
       <div class="form-group"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn-primary" style="width:100%;margin-top:.5rem" onclick="doLogin()">Sign In</button>
     </div>
-      <div id="register-form" style="display:none">
+    <div id="register-form" style="display:none">
       <div class="form-row">
         <div class="form-group"><label for="reg-name">Name</label><input type="text" id="reg-name" placeholder="Full name"></div>
-        <div class="form-group"><label for="reg-username">Username</label><input type="text" id="reg-username" placeholder="username (optional)"></div>
         <div class="form-group"><label for="reg-phone">Phone</label><input type="tel" id="reg-phone" placeholder="806-000-0000"></div>
       </div>
       <div class="form-group"><label for="reg-email">Email</label><input type="email" id="reg-email" placeholder="email@example.com"></div>
@@ -922,7 +893,7 @@ select option {
 
 <script>
 // Images injected from images.js
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   // Set images from the injected JS constants
   const heroBg = document.getElementById('hero-bg');
   if(typeof IMG1 !== 'undefined' && heroBg && !heroBg.style.backgroundImage) {
@@ -936,7 +907,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if(typeof IMG3 !== 'undefined') {
     document.getElementById('photo3').src = IMG3;
   }
-  await loadRuntimeConfig();
+  loadRuntimeConfig();
   setupLiveAnimations();
   updateCartUI();
   updateAuthUI();
@@ -985,12 +956,11 @@ function setupLiveAnimations() {
   }
 }
 
-const API_REMOTE = 'https://west-texas-sports-grill-2.onrender.com/api';
+const API_REMOTE = 'https://west-texas-sports-grill-backend.onrender.com/api';
 const API_LOCAL = 'http://localhost:3000/api';
 
-// Allow switching API at runtime if the configured remote is unreachable (helps when frontend/backends are deployed separately)
-let API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
-let API_ORIGIN = new URL(API).origin;
+const API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
+const API_ORIGIN = new URL(API).origin;
 let runtimeImageBaseUrl = '';
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
@@ -1261,19 +1231,6 @@ async function pollOrderStatus(orderId) {
 }
 
 async function loadRuntimeConfig() {
-  // Ensure API is reachable; if not, fall back to same-origin '/api'
-  runtimeImageBaseUrl = API_ORIGIN;
-  try {
-    // try a lightweight ping to the API root
-    const ping = await fetch(API, { method: 'GET', mode: 'cors' });
-    if(!ping.ok) throw new Error('API ping failed');
-  } catch (e) {
-    // fallback to same origin (useful if frontend and backend are co-hosted)
-    API = window.location.origin + '/api';
-    API_ORIGIN = window.location.origin;
-    console.log('API unreachable; falling back to', API);
-  }
-
   try {
     const cfg = await api('/config');
     if(cfg && cfg.imageBaseUrl) runtimeImageBaseUrl = cfg.imageBaseUrl;
@@ -1441,12 +1398,12 @@ async function doRegister() {
     toast(`Welcome, ${currentUser.name.split(' ')[0]}! 🤠`);
   } catch(e) { toast(e.message,'error'); }
 }
-async function doLogin() {
-  const usernameOrEmail = document.getElementById('login-username').value;
-  const pass=document.getElementById('login-pass').value;
-  if(!usernameOrEmail||!pass) return toast('Fill in all fields','error');
-  try {
-    const data = await api('/auth/login','POST',{username:usernameOrEmail,password:pass});
+function doLogout() {
+  token=''; currentUser=null;
+  localStorage.removeItem('wtsg_token'); localStorage.removeItem('wtsg_user');
+  updateAuthUI(); toast('Signed out'); showPage('home');
+}
+
 // ── Menu ────────────────────────────────────────────────────────────────
 async function loadMenuPage() {
   if(allMenuItems.length) { renderWeeklySpecials(allMenuItems); renderMenuItems(allMenuItems); return; }
@@ -1456,13 +1413,12 @@ async function loadMenuPage() {
     allMenuItems=items;
     allCategories=cats.map(c=>({ ...c, slug: c.slug || slugify(c.name) }));
     currentMenuFilter='all';
-  const username=document.getElementById('reg-username').value;
-  const email=document.getElementById('reg-email').value;
+    const cf=document.getElementById('cat-filters');
     cf.querySelectorAll('.cat-btn:not(:first-child)').forEach(b=>b.remove());
     allCategories.forEach(c => {
       const btn=document.createElement('button');
       btn.className='cat-btn';
-    const data=await api('/auth/register','POST',{name,username, email,phone,password:pass});
+      btn.textContent=c.icon+' '+c.name;
       btn.onclick=()=>filterMenu(c.slug,btn);
       cf.appendChild(btn);
     });
@@ -1626,7 +1582,7 @@ function goCheckout() {
   document.getElementById('co-addr-wrap').style.display=orderType==='delivery'?'block':'none';
   if(currentUser) {
     document.getElementById('co-name').value=currentUser.name;
-    document.getElementById('co-phone').value=formatPhone(currentUser.phone||'');
+    document.getElementById('co-phone').value=currentUser.phone||'';
     document.getElementById('co-email').value=currentUser.email||'';
   }
   showPage('checkout');
@@ -1900,53 +1856,6 @@ async function submitReview() {
     ['rv-name','rv-title','rv-body'].forEach(id=>document.getElementById(id).value='');
     setRating(0);
   } catch(e) { toast(e.message,'error'); }
-}
-
-async function submitJobApplication() {
-  const name = document.getElementById('career-name').value.trim();
-  const email = document.getElementById('career-email').value.trim();
-  const phone = document.getElementById('career-phone').value.trim();
-  const position = document.getElementById('career-position').value.trim();
-  const message = document.getElementById('career-message').value.trim();
-  if(!name || !email || !phone || !position) return toast('Please complete all required fields','error');
-
-  const formData = new FormData();
-  formData.append('name', name);
-  formData.append('email', email);
-  formData.append('phone', phone);
-  formData.append('position', position);
-  formData.append('message', message);
-  const resumeInput = document.getElementById('career-resume');
-  if(resumeInput && resumeInput.files && resumeInput.files[0]) {
-    formData.append('resume', resumeInput.files[0]);
-  }
-
-  try {
-    toast('Submitting application…', 'info');
-    const response = await fetch(API + '/careers/apply', {
-      method: 'POST',
-      body: formData
-    });
-    const data = await response.json();
-    if(!response.ok) throw new Error(data.detail || 'Failed to submit application');
-    document.getElementById('career-form-wrap').style.display = 'none';
-    document.getElementById('career-success').style.display = 'block';
-    toast('Application submitted! We’ll be in touch soon.', 'success');
-  } catch(e) {
-    toast(e.message, 'error');
-  }
-}
-
-function resetCareerForm() {
-  document.getElementById('career-name').value = '';
-  document.getElementById('career-email').value = '';
-  document.getElementById('career-phone').value = '';
-  document.getElementById('career-position').value = '';
-  document.getElementById('career-message').value = '';
-  document.getElementById('career-resume').value = '';
-  document.getElementById('career-success').style.display = 'none';
-  document.getElementById('career-form-wrap').style.display = 'block';
-  showPage('careers');
 }
 
 // ── News ────────────────────────────────────────────────────────────────────
@@ -2228,7 +2137,7 @@ async function loadAdminOrders() {
         <thead><tr><th>#</th><th>Customer</th><th>Type</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr></thead>
         <tbody>${orders.map(o=>`<tr>
           <td><strong>#${o.id}</strong></td>
-          <td>${o.guest_name||'Member'}<br><small style="color:rgba(245,236,215,.35)">${formatPhone(o.guest_phone||'')}</small></td>
+          <td>${o.guest_name||'Member'}<br><small style="color:rgba(245,236,215,.35)">${o.guest_phone||''}</small></td>
           <td style="text-transform:capitalize">${o.order_type.replace('_',' ')}</td>
           <td style="color:var(--gold);font-weight:700">$${o.total.toFixed(2)}</td>
           <td><span class="pill p-${o.status}">${o.status.replace('_',' ')}</span></td>
@@ -2262,7 +2171,7 @@ async function loadAdminReservations() {
           <td>${r.date}</td>
           <td>${fmtTime(r.time)}</td>
           <td>${r.party_size} guests</td>
-          <td style="font-size:.78rem">${r.email}<br>${formatPhone(r.phone)}</td>
+          <td style="font-size:.78rem">${r.email}<br>${r.phone}</td>
           <td><span class="pill p-${r.status}">${r.status}</span></td>
           <td>
             <button class="abtn success" onclick="updateResStatus(${r.id},'confirmed')">✓ Confirm</button>
@@ -2562,15 +2471,6 @@ function resolveImageUrl(path) {
   return new URL(path, base).href;
 }
 
-function formatPhone(p) {
-  if(!p) return '';
-  const s = String(p).trim();
-  const digits = s.replace(/\D/g,'');
-  if(digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
-  if(digits.length === 11 && digits.startsWith('1')) return `+1 (${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`;
-  return s;
-}
-
 async function loadSiteSettings() {
   document.getElementById('admin-content').innerHTML='<div class="loading">Loading…</div>';
   try {
@@ -2742,8 +2642,7 @@ async function uploadImage(slot, input) {
   if(token) fd.append('auth_token', token);
   toast('Uploading…','info');
   try {
-    const uploadUrl = API + '/settings/upload-image/' + slot;
-  const r = await fetch(uploadUrl, {
+    const r = await fetch(API + '/settings/upload-image/' + slot, {
       method:'POST',
       headers: token ? {
         'Authorization':'Bearer '+token,
@@ -2784,7 +2683,7 @@ async function initCheckoutPaymentOptions() {
     paymentMethod = 'stripe';
     setPaymentMethod(paymentMethod);
   }
-}
+Í}
 
 async function removeImage(slot, index=null) {
   if(!confirm('Remove this image?')) return;

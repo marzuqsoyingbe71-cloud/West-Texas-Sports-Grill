@@ -18,17 +18,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(__dirname));
 
-// Debug: list upload files (helpful to confirm files exist on host)
-app.get('/api/uploads/list', (req, res) => {
-  try {
-    const files = fs.readdirSync(UPLOADS_DIR).filter(f => fs.statSync(path.join(UPLOADS_DIR, f)).isFile());
-    const urls = files.map(f => '/uploads/' + f);
-    res.json({ count: urls.length, files: urls });
-  } catch (err) {
-    res.status(500).json({ detail: 'Failed to list uploads', error: err.message });
-  }
-});
-
 // Optional payment SDKs (only used if env vars present and packages installed)
 let stripe = null;
 try{
@@ -242,7 +231,7 @@ const sampleMenu = [
 ];
 const sampleCats = [{id:1,name:'Burgers',icon:'🍔'},{id:2,name:'Cocktails',icon:'🍸'}];
 const sampleSettings = { admin_email:'', hero_image:null, hero_images:[], photo_strip_1:null, photo_strip_2:null, photo_strip_3:null, cocktail_banner_image:null, menu_bg_image:null, gallery_image_1:null, gallery_image_2:null, gallery_image_3:null, gallery_image_4:null, gallery_images:[] };
-const sampleUsers = [{ id:1, username:'admin', name:'Admin User', email:'admin@westtexas.com', phone:'806-000-0000', password:'password', role:'admin' }];
+const sampleUsers = [{ id:1, name:'Admin User', email:'admin@westtexas.com', phone:'806-000-0000', password:'password', role:'admin' }];
 const sampleNews = [
   {id:1,title:'Grand Opening Celebration!',description:'Join us for an unforgettable grand opening weekend with exclusive cocktails and live music!',category:'event',image:null,date:'2026-07-15',highlight:true,created_at:'2026-06-29T00:00:00Z'},
   {id:2,title:'New Summer Menu Available',description:'Explore our exciting new summer menu featuring fresh ingredients and creative seasonal dishes.',category:'menu',image:null,date:'2026-06-25',highlight:false,created_at:'2026-06-25T00:00:00Z'}
@@ -257,7 +246,6 @@ readJSON('reservations.json', []);
 readJSON('reviews.json', []);
 readJSON('users.json', sampleUsers);
 readJSON('news.json', sampleNews);
-readJSON('careers.json', []);
 
 function parseBoolean(value) {
   if(typeof value === 'boolean') return value;
@@ -417,12 +405,6 @@ app.get('/api/orders/track/:order_id', (req,res)=>{
 
 // --- Payments: Stripe Checkout and PayPal ---
 const BASE_ORIGIN = process.env.BASE_ORIGIN || 'http://localhost:3000';
-
-// Runtime config endpoint for frontend to determine image base URL and API origin
-app.get('/api/config', (req, res) => {
-  const imageBase = process.env.IMAGE_BASE_URL || process.env.API_ORIGIN || BASE_ORIGIN;
-  res.json({ apiOrigin: BASE_ORIGIN, imageBaseUrl: imageBase });
-});
 
 app.post('/api/payments/stripe/create-checkout-session', async (req,res)=>{
   if(!stripe) return res.status(501).json({detail:'Stripe not configured on server'});
@@ -671,22 +653,21 @@ app.post('/api/auth/login', (req,res)=>{
   const { username, password } = req.body;
   if(!username||!password) return res.status(400).json({detail:'Username and password required'});
   const users = readJSON('users.json', []);
-  const user = users.find(u => (u.email && u.email.toLowerCase() === username.toLowerCase()) || (u.username && u.username.toLowerCase() === username.toLowerCase()));
+  const user = users.find(u => u.email.toLowerCase() === username.toLowerCase());
   if(!user || user.password !== password) return res.status(401).json({detail:'Invalid credentials'});
-  const safeUser = { id:user.id, username:user.username || null, name:user.name, email:user.email, phone:user.phone, role:user.role };
+  const safeUser = { id:user.id, name:user.name, email:user.email, phone:user.phone, role:user.role };
   res.json({ access_token:'token-'+user.id, user:safeUser });
 });
 
 app.post('/api/auth/register', (req,res)=>{
-  const { name, username, email, phone, password } = req.body;
+  const { name, email, phone, password } = req.body;
   if(!name||!email||!phone||!password) return res.status(400).json({detail:'All fields are required'});
   const users = readJSON('users.json', []);
-  if(users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) return res.status(400).json({detail:'Email already registered'});
-  if(username && users.some(u => u.username && u.username.toLowerCase() === username.toLowerCase())) return res.status(400).json({detail:'Username already taken'});
+  if(users.some(u => u.email.toLowerCase() === email.toLowerCase())) return res.status(400).json({detail:'Email already registered'});
   const id = (users.length?users[users.length-1].id:0)+1;
-  const newUser = { id, username: username ? username.toLowerCase() : (email.split('@')[0]).toLowerCase(), name, email:email.toLowerCase(), phone, password, role:'customer' };
+  const newUser = { id, name, email:email.toLowerCase(), phone, password, role:'customer' };
   users.push(newUser); writeJSON('users.json', users);
-  const safeUser = { id, username: newUser.username, name, email:email.toLowerCase(), phone, role:'customer' };
+  const safeUser = { id, name, email:email.toLowerCase(), phone, role:'customer' };
   res.json({ access_token:'token-'+id, user:safeUser });
 });
 
