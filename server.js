@@ -203,18 +203,8 @@ function getUserFromToken(token) {
 
 function validateAdminOrApiKey(req, res, next) {
   const authHeader = req.headers.authorization || req.headers.Authorization;
-  let token = null;
   if(authHeader && authHeader.startsWith('Bearer ')) {
-    token = authHeader.slice(7).trim();
-  } else if(req.headers['x-auth-token']) {
-    token = req.headers['x-auth-token'];
-  } else if(req.body && req.body.auth_token) {
-    token = req.body.auth_token;
-  } else if(req.query && req.query.auth_token) {
-    token = req.query.auth_token;
-  }
-
-  if(token) {
+    const token = authHeader.slice(7).trim();
     const user = getUserFromToken(token);
     if(user && user.role === 'admin') {
       req.user = user;
@@ -632,7 +622,7 @@ app.post('/api/reviews/', (req,res)=>{
       <p><strong>Rating:</strong> ${stars} (${rec.rating}/5)</p>
       <p><strong>Title:</strong> ${rec.title || 'No title'}</p>
       <p><strong>Review:</strong></p>
-      <p>${rec.body || rec.review || 'No content'}</p>
+      <p>${rec.review || 'No content'}</p>
       <p>Status: <strong>${rec.status}</strong> (pending approval)</p>
       <p>Please log into the admin panel to approve or reject this review.</p>
     `;
@@ -685,52 +675,6 @@ app.post('/api/auth/register', (req,res)=>{
 app.get('/api/reviews/', (req,res)=>{
   const r = readJSON('reviews.json', []);
   res.json(r.filter(x=>x.status==='approved'));
-});
-
-app.post('/api/careers/apply', upload.single('resume'), (req,res)=>{
-  const body = req.body || {};
-  const name = (body.name || '').trim();
-  const email = (body.email || '').trim();
-  const phone = (body.phone || '').trim();
-  const position = (body.position || '').trim();
-  const message = body.message || null;
-  if(!name || !email || !phone || !position) return res.status(400).json({detail:'Name, email, phone, and position are required.'});
-  const apps = readJSON('careers.json', []);
-  const id = (apps.length ? apps[apps.length-1].id : 0) + 1;
-  const record = {
-    id,
-    name,
-    email,
-    phone,
-    position,
-    message: message || null,
-    resume_url: req.file ? '/uploads/' + req.file.filename : null,
-    submitted_at: new Date().toISOString()
-  };
-  apps.push(record);
-  writeJSON('careers.json', apps);
-
-  const settings = readJSON('settings.json', sampleSettings);
-  if(settings.admin_email) {
-    const html = `
-      <h2>New Job Application Received</h2>
-      <p><strong>Application ID:</strong> #${record.id}</p>
-      <p><strong>Name:</strong> ${record.name}</p>
-      <p><strong>Email:</strong> ${record.email}</p>
-      <p><strong>Phone:</strong> ${record.phone}</p>
-      <p><strong>Position:</strong> ${record.position}</p>
-      <p><strong>Message:</strong> ${record.message || 'No message provided'}</p>
-      <p><strong>Resume:</strong> ${record.resume_url ? `<a href="${record.resume_url}">${record.resume_url}</a>` : 'Not provided'}</p>
-    `;
-    sendNotificationEmail(settings.admin_email, `New Job Application #${record.id}`, html);
-  }
-
-  res.json({ok:true, id: record.id});
-});
-
-app.get('/api/careers/applications', validateAdminOrApiKey, (req,res)=>{
-  const apps = readJSON('careers.json', []);
-  res.json(apps);
 });
 
 app.put('/api/orders/:order_id/status', validateAdminOrApiKey, (req,res)=>{
@@ -992,55 +936,4 @@ function scheduleDailyDashboardRefresh(){
 
 scheduleDailyDashboardRefresh();
 
-app.listen(port, '0.0.0.0', ()=> console.log('Server started on', port));ON('news.json', []);
-  const item = news.find(x=>x.id===Number(req.params.id));
-  if(!item) return res.status(404).json({detail:'News not found'});
-  
-  if(req.body.title !== undefined) item.title = req.body.title;
-  if(req.body.description !== undefined) item.description = req.body.description;
-  if(req.body.category !== undefined) item.category = req.body.category;
-  if(req.body.date !== undefined) item.date = req.body.date;
-  if(req.body.highlight !== undefined) item.highlight = req.body.highlight === 'true' || req.body.highlight === true;
-  if(req.file) item.image = '/uploads/' + req.file.filename;
-  else if(req.body.image !== undefined) item.image = req.body.image;
-  
-  writeJSON('news.json', news);
-  res.json(item);
-});
-
-app.delete('/api/news/:id', validateAdminOrApiKey, (req,res)=>{
-  let news = readJSON('news.json', []);
-  const id = Number(req.params.id);
-  if(!news.some(x=>x.id===id)) return res.status(404).json({detail:'News not found'});
-  news = news.filter(x=>x.id!==id);
-  writeJSON('news.json', news);
-  res.json({ok:true});
-});
-
-// small health
-app.get('/api/', (req,res)=> res.json({ok:true}));
-
-const port = Number(process.env.PORT) || 3000;
-// Schedule daily dashboard cache refresh at midnight server local time
-function scheduleDailyDashboardRefresh(){
-  const runRefresh = ()=>{
-    try{
-      const orders = readJSON('orders.json', []);
-      const menuItems = readJSON('menu.json', []);
-      const data = computeDashboardFromOrders(orders, menuItems, {});
-      const payload = { generated_at: new Date().toISOString(), data };
-      writeJSON('dashboard-cache.json', payload);
-      console.log('Dashboard cache refreshed at', payload.generated_at);
-    } catch(e){ console.error('Dashboard refresh failed', e); }
-  };
-  // run once now
-  runRefresh();
-  const now = new Date();
-  const next = new Date(now);
-  next.setHours(24,0,5,0); // shortly after midnight
-  const msUntil = next - now;
-  setTimeout(()=>{
-    runRefresh();
-    setInterval(runRefresh, 24*60*60*1000);
-  }, msUntil);
-}
+app.listen(port, '0.0.0.0', ()=> console.log('Server started on', port));
