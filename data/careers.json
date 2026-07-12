@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "name": "Test Applicant",
+    "email": "test@example.com",
+    "phone": "806-123-4567",
+    "position": "Line Cook",
+    "message": "Excited to join the team",
+    "resume_url": null,
+    "submitted_at": "2026-07-12T22:00:02.174Z"
+  }
+]

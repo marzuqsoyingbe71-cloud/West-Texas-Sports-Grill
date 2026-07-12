@@ -8,60 +8,17 @@ const nodemailer = require('nodemailer');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
-const IMAGE_BASE_URL = (process.env.IMAGE_BASE_URL || process.env.PUBLIC_URL || '').replace(/\/$/, '');
 if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 if(!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
 
-function toImageUrl(path) {
-  if(!path) return null;
-  if(/^https?:\/\//i.test(path)) return path;
-  if(!IMAGE_BASE_URL) return path;
-  return `${IMAGE_BASE_URL}${path.startsWith('/') ? path : '/' + path}`;
-}
-
-function readJSON(name, fallback) {
-  const filePath = path.join(DATA_DIR, name);
-  try {
-    if (fs.existsSync(filePath)) {
-      const content = fs.readFileSync(filePath, 'utf-8');
-      return JSON.parse(content);
-    }
-  } catch (e) {
-    console.log(`Error reading ${name}:`, e.message);
-  }
-  // Write fallback if file doesn't exist
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(fallback || {}, null, 2), 'utf-8');
-  } catch (e) {
-    console.log(`Error writing ${name}:`, e.message);
-  }
-  return fallback || {};
-}
-
-function writeJSON(name, data) {
-  const filePath = path.join(DATA_DIR, name);
-  try {
-    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf-8');
-  } catch (e) {
-    console.log(`Error writing ${name}:`, e.message);
-  }
-}
-
 const app = express();
-app.use(cors({ origin: true, credentials: true }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/uploads', express.static(UPLOADS_DIR));
 app.use(express.static(__dirname));
 
-app.get('/api/health', (req, res) => {
-  res.json({ ok: true, service: 'west-texas-sports-grill' });
-});
-
-app.get('/api/config', (req, res) => {
-  res.json({ imageBaseUrl: IMAGE_BASE_URL || null });
-});
-
+// Optional payment SDKs (only used if env vars present and packages installed)
 let stripe = null;
 try{
   if(process.env.STRIPE_SECRET_KEY) stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
@@ -76,20 +33,13 @@ try{
   }
 }catch(e){ console.log('PayPal SDK not available:', e.message); }
 
-async function initApp() {
-  // File-based storage is now used directly in readJSON/writeJSON
-}
-
-initApp().then(() => {
-  ensureSampleData();
-  const port = Number(process.env.PORT) || 3000;
-  scheduleDailyDashboardRefresh();
-  app.listen(port, '0.0.0.0', ()=> console.log('Server started on', port));
-}).catch(err => {
-  console.error('Failed to initialize app:', err);
-});
-
 // helpers
+function readJSON(name, fallback) {
+  const p = path.join(DATA_DIR, name);
+  if(!fs.existsSync(p)) { fs.writeFileSync(p, JSON.stringify(fallback || {})); }
+  return JSON.parse(fs.readFileSync(p,'utf8'));
+}
+function writeJSON(name, data) { fs.writeFileSync(path.join(DATA_DIR,name), JSON.stringify(data, null, 2)); }
 function computeOrderTotal(order, menuItems) {
   const items = order.items || [];
   return items.reduce((sum, item) => {
@@ -245,38 +195,27 @@ function validateApiKey(req, res, next) {
 
 function getUserFromToken(token) {
   if(!token || typeof token !== 'string') return null;
-
-  const cleaned = token.trim();
-  const directMatch = cleaned.match(/^token-(\d+)$/);
-  if(directMatch) {
-    const users = readJSON('users.json', []);
-    return users.find(u => u.id === Number(directMatch[1])) || null;
-  }
-
+  const match = token.match(/^token-(\d+)$/);
+  if(!match) return null;
   const users = readJSON('users.json', []);
-  const fallback = users.find(u => u.access_token === cleaned || u.token === cleaned || u.id === Number(cleaned));
-  if(fallback) return fallback;
-
-  return null;
+  return users.find(u => u.id === Number(match[1])) || null;
 }
 
 function validateAdminOrApiKey(req, res, next) {
   const authHeader = req.headers.authorization || req.headers.Authorization;
+  let token = null;
   if(authHeader && authHeader.startsWith('Bearer ')) {
-    const token = authHeader.slice(7).trim();
-    const user = getUserFromToken(token);
-    if(user && user.role === 'admin') {
-      req.user = user;
-      return next();
-    }
+    token = authHeader.slice(7).trim();
+  } else if(req.headers['x-auth-token']) {
+    token = req.headers['x-auth-token'];
+  } else if(req.body && req.body.auth_token) {
+    token = req.body.auth_token;
+  } else if(req.query && req.query.auth_token) {
+    token = req.query.auth_token;
   }
 
-  const body = req.body && typeof req.body === 'object' ? req.body : {};
-  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token ||
-    body.auth_token || body.token || body.access_token ||
-    (req.headers['x-token'] || req.headers['x-access-token']);
-  if(authToken) {
-    const user = getUserFromToken(authToken);
+  if(token) {
+    const user = getUserFromToken(token);
     if(user && user.role === 'admin') {
       req.user = user;
       return next();
@@ -308,16 +247,16 @@ const sampleNews = [
   {id:2,title:'New Summer Menu Available',description:'Explore our exciting new summer menu featuring fresh ingredients and creative seasonal dishes.',category:'menu',image:null,date:'2026-06-25',highlight:false,created_at:'2026-06-25T00:00:00Z'}
 ];
 
-function ensureSampleData() {
-  readJSON('menu.json', sampleMenu);
-  readJSON('categories.json', sampleCats);
-  readJSON('settings.json', sampleSettings);
-  readJSON('orders.json', []);
-  readJSON('reservations.json', []);
-  readJSON('reviews.json', []);
-  readJSON('users.json', sampleUsers);
-  readJSON('news.json', sampleNews);
-}
+// ensure data files
+readJSON('menu.json', sampleMenu);
+readJSON('categories.json', sampleCats);
+readJSON('settings.json', sampleSettings);
+readJSON('orders.json', []);
+readJSON('reservations.json', []);
+readJSON('reviews.json', []);
+readJSON('users.json', sampleUsers);
+readJSON('news.json', sampleNews);
+readJSON('careers.json', []);
 
 function parseBoolean(value) {
   if(typeof value === 'boolean') return value;
@@ -415,22 +354,21 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
-app.post('/api/settings/upload-image/:slot', upload.single('file'), validateAdminOrApiKey, (req,res)=>{
+app.post('/api/settings/upload-image/:slot', upload.single('file'), (req,res)=>{
   const slot = req.params.slot;
   if(!req.file) return res.status(400).json({detail:'No file uploaded'});
   const rel = '/uploads/' + req.file.filename;
-  const absoluteUrl = toImageUrl(rel);
   const s = Object.assign({}, sampleSettings, readJSON('settings.json', sampleSettings));
   if(slot === 'gallery_images' || slot === 'hero_images') {
     const target = slot === 'hero_images' ? 'hero_images' : 'gallery_images';
     if(!Array.isArray(s[target])) s[target] = [];
     s[target].push(rel);
     writeJSON('settings.json', s);
-    return res.json({slot: target, url: absoluteUrl || rel, index: s[target].length - 1});
+    return res.json({slot: target, url: rel, index: s[target].length - 1});
   }
   s[slot] = rel;
   writeJSON('settings.json', s);
-  res.json({slot, url: absoluteUrl || rel});
+  res.json({slot, url: rel});
 });
 app.delete('/api/settings/image/:slot', (req,res)=>{
   const slot = req.params.slot;
@@ -694,7 +632,7 @@ app.post('/api/reviews/', (req,res)=>{
       <p><strong>Rating:</strong> ${stars} (${rec.rating}/5)</p>
       <p><strong>Title:</strong> ${rec.title || 'No title'}</p>
       <p><strong>Review:</strong></p>
-      <p>${rec.review || 'No content'}</p>
+      <p>${rec.body || rec.review || 'No content'}</p>
       <p>Status: <strong>${rec.status}</strong> (pending approval)</p>
       <p>Please log into the admin panel to approve or reject this review.</p>
     `;
@@ -747,6 +685,52 @@ app.post('/api/auth/register', (req,res)=>{
 app.get('/api/reviews/', (req,res)=>{
   const r = readJSON('reviews.json', []);
   res.json(r.filter(x=>x.status==='approved'));
+});
+
+app.post('/api/careers/apply', upload.single('resume'), (req,res)=>{
+  const body = req.body || {};
+  const name = (body.name || '').trim();
+  const email = (body.email || '').trim();
+  const phone = (body.phone || '').trim();
+  const position = (body.position || '').trim();
+  const message = body.message || null;
+  if(!name || !email || !phone || !position) return res.status(400).json({detail:'Name, email, phone, and position are required.'});
+  const apps = readJSON('careers.json', []);
+  const id = (apps.length ? apps[apps.length-1].id : 0) + 1;
+  const record = {
+    id,
+    name,
+    email,
+    phone,
+    position,
+    message: message || null,
+    resume_url: req.file ? '/uploads/' + req.file.filename : null,
+    submitted_at: new Date().toISOString()
+  };
+  apps.push(record);
+  writeJSON('careers.json', apps);
+
+  const settings = readJSON('settings.json', sampleSettings);
+  if(settings.admin_email) {
+    const html = `
+      <h2>New Job Application Received</h2>
+      <p><strong>Application ID:</strong> #${record.id}</p>
+      <p><strong>Name:</strong> ${record.name}</p>
+      <p><strong>Email:</strong> ${record.email}</p>
+      <p><strong>Phone:</strong> ${record.phone}</p>
+      <p><strong>Position:</strong> ${record.position}</p>
+      <p><strong>Message:</strong> ${record.message || 'No message provided'}</p>
+      <p><strong>Resume:</strong> ${record.resume_url ? `<a href="${record.resume_url}">${record.resume_url}</a>` : 'Not provided'}</p>
+    `;
+    sendNotificationEmail(settings.admin_email, `New Job Application #${record.id}`, html);
+  }
+
+  res.json({ok:true, id: record.id});
+});
+
+app.get('/api/careers/applications', validateAdminOrApiKey, (req,res)=>{
+  const apps = readJSON('careers.json', []);
+  res.json(apps);
 });
 
 app.put('/api/orders/:order_id/status', validateAdminOrApiKey, (req,res)=>{
@@ -934,7 +918,7 @@ app.get('/api/news/:id', (req,res)=>{
   res.json(item);
 });
 
-app.post('/api/news', upload.single('image'), validateAdminOrApiKey, (req,res)=>{
+app.post('/api/news', validateAdminOrApiKey, upload.single('image'), (req,res)=>{
   const news = readJSON('news.json', []);
   const id = (news.length ? news[news.length-1].id : 0) + 1;
   const record = {
@@ -952,8 +936,63 @@ app.post('/api/news', upload.single('image'), validateAdminOrApiKey, (req,res)=>
   res.json(record);
 });
 
-app.put('/api/news/:id', upload.single('image'), validateAdminOrApiKey, (req,res)=>{
+app.put('/api/news/:id', validateAdminOrApiKey, upload.single('image'), (req,res)=>{
   const news = readJSON('news.json', []);
+  const item = news.find(x=>x.id===Number(req.params.id));
+  if(!item) return res.status(404).json({detail:'News not found'});
+  
+  if(req.body.title !== undefined) item.title = req.body.title;
+  if(req.body.description !== undefined) item.description = req.body.description;
+  if(req.body.category !== undefined) item.category = req.body.category;
+  if(req.body.date !== undefined) item.date = req.body.date;
+  if(req.body.highlight !== undefined) item.highlight = req.body.highlight === 'true' || req.body.highlight === true;
+  if(req.file) item.image = '/uploads/' + req.file.filename;
+  else if(req.body.image !== undefined) item.image = req.body.image;
+  
+  writeJSON('news.json', news);
+  res.json(item);
+});
+
+app.delete('/api/news/:id', validateAdminOrApiKey, (req,res)=>{
+  let news = readJSON('news.json', []);
+  const id = Number(req.params.id);
+  if(!news.some(x=>x.id===id)) return res.status(404).json({detail:'News not found'});
+  news = news.filter(x=>x.id!==id);
+  writeJSON('news.json', news);
+  res.json({ok:true});
+});
+
+// small health
+app.get('/api/', (req,res)=> res.json({ok:true}));
+
+const port = Number(process.env.PORT) || 3000;
+// Schedule daily dashboard cache refresh at midnight server local time
+function scheduleDailyDashboardRefresh(){
+  const runRefresh = ()=>{
+    try{
+      const orders = readJSON('orders.json', []);
+      const menuItems = readJSON('menu.json', []);
+      const data = computeDashboardFromOrders(orders, menuItems, {});
+      const payload = { generated_at: new Date().toISOString(), data };
+      writeJSON('dashboard-cache.json', payload);
+      console.log('Dashboard cache refreshed at', payload.generated_at);
+    } catch(e){ console.error('Dashboard refresh failed', e); }
+  };
+  // run once now
+  runRefresh();
+  const now = new Date();
+  const next = new Date(now);
+  next.setHours(24,0,5,0); // shortly after midnight
+  const msUntil = next - now;
+  setTimeout(()=>{
+    runRefresh();
+    setInterval(runRefresh, 24*60*60*1000);
+  }, msUntil);
+}
+
+scheduleDailyDashboardRefresh();
+
+app.listen(port, '0.0.0.0', ()=> console.log('Server started on', port));ON('news.json', []);
   const item = news.find(x=>x.id===Number(req.params.id));
   if(!item) return res.status(404).json({detail:'News not found'});
   
