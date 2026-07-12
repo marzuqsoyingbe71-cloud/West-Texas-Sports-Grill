@@ -259,7 +259,7 @@ function validateAdminOrApiKey(req, res, next) {
     }
   }
 
-  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token;
+  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token || (req.body && (req.body.auth_token || req.body.token));
   if(authToken) {
     const user = getUserFromToken(authToken);
     if(user && user.role === 'admin') {

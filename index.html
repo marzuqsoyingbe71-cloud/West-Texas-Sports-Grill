@@ -2024,6 +2024,7 @@ async function saveNews() {
   fd.append('category', document.getElementById('news-cat').value);
   fd.append('date', document.getElementById('news-date').value);
   fd.append('highlight', document.getElementById('news-highlight').checked);
+  if(token) fd.append('auth_token', token);
   
   const fileInput = document.getElementById('news-img');
   if(fileInput.files && fileInput.files[0]) fd.append('image', fileInput.files[0]);
@@ -2293,6 +2294,7 @@ async function saveItem() {
   fd.append('is_spicy', document.getElementById('if-spicy').checked);
   fd.append('weekly_special', document.getElementById('if-weekly-special').checked);
   fd.append('is_available', document.getElementById('if-available').checked);
+  if(token) fd.append('auth_token', token);
   const imageFile = document.getElementById('if-image').files[0];
   if(imageFile) fd.append('image', imageFile);
   try {
@@ -2621,6 +2623,7 @@ async function uploadImage(slot, input) {
   if(file.size > 10 * 1024 * 1024) { toast('File too large. Max 10MB','error'); return; }
   const fd = new FormData();
   fd.append('file', file);
+  if(token) fd.append('auth_token', token);
   toast('Uploading…','info');
   try {
     const r = await fetch(API + '/settings/upload-image/' + slot, {
