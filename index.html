@@ -903,13 +903,14 @@ select option {
       <div class="tab" onclick="authTab('register',this)">Create Account</div>
     </div>
     <div id="login-form">
-      <div class="form-group"><label for="login-email">Email</label><input type="email" id="login-email" placeholder="email@example.com"></div>
+      <div class="form-group"><label for="login-username">Username or Email</label><input type="text" id="login-username" placeholder="username or email"></div>
       <div class="form-group"><label for="login-pass">Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
       <button class="btn-primary" style="width:100%;margin-top:.5rem" onclick="doLogin()">Sign In</button>
     </div>
-    <div id="register-form" style="display:none">
+      <div id="register-form" style="display:none">
       <div class="form-row">
         <div class="form-group"><label for="reg-name">Name</label><input type="text" id="reg-name" placeholder="Full name"></div>
+        <div class="form-group"><label for="reg-username">Username</label><input type="text" id="reg-username" placeholder="username (optional)"></div>
         <div class="form-group"><label for="reg-phone">Phone</label><input type="tel" id="reg-phone" placeholder="806-000-0000"></div>
       </div>
       <div class="form-group"><label for="reg-email">Email</label><input type="email" id="reg-email" placeholder="email@example.com"></div>
@@ -984,11 +985,12 @@ function setupLiveAnimations() {
   }
 }
 
-const API_REMOTE = 'https://west-texas-sports-grill-backend.onrender.com/api';
+const API_REMOTE = 'https://west-texas-sports-grill-2.onrender.com/api';
 const API_LOCAL = 'http://localhost:3000/api';
 
-const API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
-const API_ORIGIN = new URL(API).origin;
+// Allow switching API at runtime if the configured remote is unreachable (helps when frontend/backends are deployed separately)
+let API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
+let API_ORIGIN = new URL(API).origin;
 let runtimeImageBaseUrl = '';
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
@@ -1259,7 +1261,19 @@ async function pollOrderStatus(orderId) {
 }
 
 async function loadRuntimeConfig() {
+  // Ensure API is reachable; if not, fall back to same-origin '/api'
   runtimeImageBaseUrl = API_ORIGIN;
+  try {
+    // try a lightweight ping to the API root
+    const ping = await fetch(API, { method: 'GET', mode: 'cors' });
+    if(!ping.ok) throw new Error('API ping failed');
+  } catch (e) {
+    // fallback to same origin (useful if frontend and backend are co-hosted)
+    API = window.location.origin + '/api';
+    API_ORIGIN = window.location.origin;
+    console.log('API unreachable; falling back to', API);
+  }
+
   try {
     const cfg = await api('/config');
     if(cfg && cfg.imageBaseUrl) runtimeImageBaseUrl = cfg.imageBaseUrl;
@@ -1427,12 +1441,12 @@ async function doRegister() {
     toast(`Welcome, ${currentUser.name.split(' ')[0]}! 🤠`);
   } catch(e) { toast(e.message,'error'); }
 }
-function doLogout() {
-  token=''; currentUser=null;
-  localStorage.removeItem('wtsg_token'); localStorage.removeItem('wtsg_user');
-  updateAuthUI(); toast('Signed out'); showPage('home');
-}
-
+async function doLogin() {
+  const usernameOrEmail = document.getElementById('login-username').value;
+  const pass=document.getElementById('login-pass').value;
+  if(!usernameOrEmail||!pass) return toast('Fill in all fields','error');
+  try {
+    const data = await api('/auth/login','POST',{username:usernameOrEmail,password:pass});
 // ── Menu ────────────────────────────────────────────────────────────────
 async function loadMenuPage() {
   if(allMenuItems.length) { renderWeeklySpecials(allMenuItems); renderMenuItems(allMenuItems); return; }
@@ -1442,12 +1456,13 @@ async function loadMenuPage() {
     allMenuItems=items;
     allCategories=cats.map(c=>({ ...c, slug: c.slug || slugify(c.name) }));
     currentMenuFilter='all';
-    const cf=document.getElementById('cat-filters');
+  const username=document.getElementById('reg-username').value;
+  const email=document.getElementById('reg-email').value;
     cf.querySelectorAll('.cat-btn:not(:first-child)').forEach(b=>b.remove());
     allCategories.forEach(c => {
       const btn=document.createElement('button');
       btn.className='cat-btn';
-      btn.textContent=c.icon+' '+c.name;
+    const data=await api('/auth/register','POST',{name,username, email,phone,password:pass});
       btn.onclick=()=>filterMenu(c.slug,btn);
       cf.appendChild(btn);
     });
@@ -1611,7 +1626,7 @@ function goCheckout() {
   document.getElementById('co-addr-wrap').style.display=orderType==='delivery'?'block':'none';
   if(currentUser) {
     document.getElementById('co-name').value=currentUser.name;
-    document.getElementById('co-phone').value=currentUser.phone||'';
+    document.getElementById('co-phone').value=formatPhone(currentUser.phone||'');
     document.getElementById('co-email').value=currentUser.email||'';
   }
   showPage('checkout');
@@ -2213,7 +2228,7 @@ async function loadAdminOrders() {
         <thead><tr><th>#</th><th>Customer</th><th>Type</th><th>Total</th><th>Status</th><th>Date</th><th>Update</th></tr></thead>
         <tbody>${orders.map(o=>`<tr>
           <td><strong>#${o.id}</strong></td>
-          <td>${o.guest_name||'Member'}<br><small style="color:rgba(245,236,215,.35)">${o.guest_phone||''}</small></td>
+          <td>${o.guest_name||'Member'}<br><small style="color:rgba(245,236,215,.35)">${formatPhone(o.guest_phone||'')}</small></td>
           <td style="text-transform:capitalize">${o.order_type.replace('_',' ')}</td>
           <td style="color:var(--gold);font-weight:700">$${o.total.toFixed(2)}</td>
           <td><span class="pill p-${o.status}">${o.status.replace('_',' ')}</span></td>
@@ -2247,7 +2262,7 @@ async function loadAdminReservations() {
           <td>${r.date}</td>
           <td>${fmtTime(r.time)}</td>
           <td>${r.party_size} guests</td>
-          <td style="font-size:.78rem">${r.email}<br>${r.phone}</td>
+          <td style="font-size:.78rem">${r.email}<br>${formatPhone(r.phone)}</td>
           <td><span class="pill p-${r.status}">${r.status}</span></td>
           <td>
             <button class="abtn success" onclick="updateResStatus(${r.id},'confirmed')">✓ Confirm</button>
@@ -2545,6 +2560,15 @@ function resolveImageUrl(path) {
   if(path.startsWith('http://') || path.startsWith('https://')) return path;
   const base = runtimeImageBaseUrl || API_ORIGIN;
   return new URL(path, base).href;
+}
+
+function formatPhone(p) {
+  if(!p) return '';
+  const s = String(p).trim();
+  const digits = s.replace(/\D/g,'');
+  if(digits.length === 10) return `(${digits.slice(0,3)}) ${digits.slice(3,6)}-${digits.slice(6)}`;
+  if(digits.length === 11 && digits.startsWith('1')) return `+1 (${digits.slice(1,4)}) ${digits.slice(4,7)}-${digits.slice(7)}`;
+  return s;
 }
 
 async function loadSiteSettings() {
