@@ -8,8 +8,16 @@ const nodemailer = require('nodemailer');
 
 const DATA_DIR = path.join(__dirname, 'data');
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const IMAGE_BASE_URL = (process.env.IMAGE_BASE_URL || process.env.PUBLIC_URL || '').replace(/\/$/, '');
 if(!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR);
 if(!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR);
+
+function toImageUrl(path) {
+  if(!path) return null;
+  if(/^https?:\/\//i.test(path)) return path;
+  if(!IMAGE_BASE_URL) return path;
+  return `${IMAGE_BASE_URL}${path.startsWith('/') ? path : '/' + path}`;
+}
 
 function readJSON(name, fallback) {
   const filePath = path.join(DATA_DIR, name);
@@ -48,6 +56,10 @@ app.use(express.static(__dirname));
 
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, service: 'west-texas-sports-grill' });
+});
+
+app.get('/api/config', (req, res) => {
+  res.json({ imageBaseUrl: IMAGE_BASE_URL || null });
 });
 
 let stripe = null;
@@ -259,8 +271,9 @@ function validateAdminOrApiKey(req, res, next) {
     }
   }
 
+  const body = req.body && typeof req.body === 'object' ? req.body : {};
   const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token ||
-    (req.body && (req.body.auth_token || req.body.token)) ||
+    body.auth_token || body.token || body.access_token ||
     (req.headers['x-token'] || req.headers['x-access-token']);
   if(authToken) {
     const user = getUserFromToken(authToken);
@@ -406,17 +419,18 @@ app.post('/api/settings/upload-image/:slot', upload.single('file'), validateAdmi
   const slot = req.params.slot;
   if(!req.file) return res.status(400).json({detail:'No file uploaded'});
   const rel = '/uploads/' + req.file.filename;
+  const absoluteUrl = toImageUrl(rel);
   const s = Object.assign({}, sampleSettings, readJSON('settings.json', sampleSettings));
   if(slot === 'gallery_images' || slot === 'hero_images') {
     const target = slot === 'hero_images' ? 'hero_images' : 'gallery_images';
     if(!Array.isArray(s[target])) s[target] = [];
     s[target].push(rel);
     writeJSON('settings.json', s);
-    return res.json({slot: target, url: rel, index: s[target].length - 1});
+    return res.json({slot: target, url: absoluteUrl || rel, index: s[target].length - 1});
   }
   s[slot] = rel;
   writeJSON('settings.json', s);
-  res.json({slot, url: rel});
+  res.json({slot, url: absoluteUrl || rel});
 });
 app.delete('/api/settings/image/:slot', (req,res)=>{
   const slot = req.params.slot;

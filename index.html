@@ -903,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(typeof IMG3 !== 'undefined') {
     document.getElementById('photo3').src = IMG3;
   }
+  loadRuntimeConfig();
   setupLiveAnimations();
   updateCartUI();
   updateAuthUI();
@@ -956,6 +957,7 @@ const API_LOCAL = 'http://localhost:3000/api';
 
 const API = (['localhost', '127.0.0.1'].includes(window.location.hostname) || window.location.protocol === 'file:' || window.location.origin === 'null') ? API_LOCAL : API_REMOTE;
 const API_ORIGIN = new URL(API).origin;
+let runtimeImageBaseUrl = '';
 let cart = JSON.parse(localStorage.getItem('wtsg_cart') || '[]');
 let orderType = 'dine_in';
 let selectedRating = 0;
@@ -1222,6 +1224,15 @@ async function pollOrderStatus(orderId) {
     await new Promise(resolve => setTimeout(resolve, intervalMs));
   }
   toast(`Still waiting for final payment confirmation for order #${orderId}. Check again in a few minutes.`, 'info');
+}
+
+async function loadRuntimeConfig() {
+  try {
+    const cfg = await api('/config');
+    if(cfg && cfg.imageBaseUrl) runtimeImageBaseUrl = cfg.imageBaseUrl;
+  } catch (e) {
+    console.log('Runtime config load failed', e.message || e);
+  }
 }
 
 async function api(path, method='GET', body=null) {
@@ -2452,7 +2463,8 @@ async function deleteReview(id) {
 function resolveImageUrl(path) {
   if(!path) return null;
   if(path.startsWith('http://') || path.startsWith('https://')) return path;
-  return new URL(path, API_ORIGIN).href;
+  const base = runtimeImageBaseUrl || API_ORIGIN;
+  return new URL(path, base).href;
 }
 
 async function loadSiteSettings() {
@@ -2697,6 +2709,7 @@ function startHeroSlideshow() {
 async function applyBackendImages() {
   try {
     const s = await api('/settings/');
+    console.log('applyBackendImages settings', s);
     const heroSlides = (Array.isArray(s.hero_images) ? s.hero_images : [])
       .map(url => resolveImageUrl(url))
       .filter(Boolean);
@@ -2710,6 +2723,7 @@ async function applyBackendImages() {
     const galleryImages = (Array.isArray(s.gallery_images) ? s.gallery_images : []).map(url => resolveImageUrl(url)).filter(Boolean);
     const fallbackGalleryImages = [1,2,3,4].map(i => resolveImageUrl(s['gallery_image_' + i])).filter(Boolean);
     const liveGalleryImages = galleryImages.length ? galleryImages : fallbackGalleryImages;
+    console.log('Resolved image URLs', { heroImages, photo1, photo2, photo3, cocktail, liveGalleryImages });
 
     heroSlideImages = heroImages;
     heroSlideIndex = 0;
