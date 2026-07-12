@@ -259,7 +259,9 @@ function validateAdminOrApiKey(req, res, next) {
     }
   }
 
-  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token || (req.body && (req.body.auth_token || req.body.token));
+  const authToken = req.headers['x-auth-token'] || req.query.auth_token || req.query.token ||
+    (req.body && (req.body.auth_token || req.body.token)) ||
+    (req.headers['x-token'] || req.headers['x-access-token']);
   if(authToken) {
     const user = getUserFromToken(authToken);
     if(user && user.role === 'admin') {
@@ -400,7 +402,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({storage});
 
-app.post('/api/settings/upload-image/:slot', validateAdminOrApiKey, upload.single('file'), (req,res)=>{
+app.post('/api/settings/upload-image/:slot', upload.single('file'), validateAdminOrApiKey, (req,res)=>{
   const slot = req.params.slot;
   if(!req.file) return res.status(400).json({detail:'No file uploaded'});
   const rel = '/uploads/' + req.file.filename;
@@ -918,7 +920,7 @@ app.get('/api/news/:id', (req,res)=>{
   res.json(item);
 });
 
-app.post('/api/news', validateAdminOrApiKey, upload.single('image'), (req,res)=>{
+app.post('/api/news', upload.single('image'), validateAdminOrApiKey, (req,res)=>{
   const news = readJSON('news.json', []);
   const id = (news.length ? news[news.length-1].id : 0) + 1;
   const record = {
@@ -936,7 +938,7 @@ app.post('/api/news', validateAdminOrApiKey, upload.single('image'), (req,res)=>
   res.json(record);
 });
 
-app.put('/api/news/:id', validateAdminOrApiKey, upload.single('image'), (req,res)=>{
+app.put('/api/news/:id', upload.single('image'), validateAdminOrApiKey, (req,res)=>{
   const news = readJSON('news.json', []);
   const item = news.find(x=>x.id===Number(req.params.id));
   if(!item) return res.status(404).json({detail:'News not found'});
