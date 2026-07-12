@@ -889,7 +889,7 @@ select option {
 
 <script>
 // Images injected from images.js
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   // Set images from the injected JS constants
   const heroBg = document.getElementById('hero-bg');
   if(typeof IMG1 !== 'undefined' && heroBg && !heroBg.style.backgroundImage) {
@@ -903,7 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
   if(typeof IMG3 !== 'undefined') {
     document.getElementById('photo3').src = IMG3;
   }
-  loadRuntimeConfig();
+  await loadRuntimeConfig();
   setupLiveAnimations();
   updateCartUI();
   updateAuthUI();
@@ -1227,6 +1227,7 @@ async function pollOrderStatus(orderId) {
 }
 
 async function loadRuntimeConfig() {
+  runtimeImageBaseUrl = API_ORIGIN;
   try {
     const cfg = await api('/config');
     if(cfg && cfg.imageBaseUrl) runtimeImageBaseUrl = cfg.imageBaseUrl;
@@ -2638,7 +2639,8 @@ async function uploadImage(slot, input) {
   if(token) fd.append('auth_token', token);
   toast('Uploading…','info');
   try {
-    const r = await fetch(API + '/settings/upload-image/' + slot, {
+    const uploadUrl = API + '/settings/upload-image/' + slot;
+  const r = await fetch(uploadUrl, {
       method:'POST',
       headers: token ? {
         'Authorization':'Bearer '+token,
